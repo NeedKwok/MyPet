@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="textColorPrimary">#FFFFFF</color>
+
+    <!--建议用的app基色-->
+    <color name="baseColor">#43c2f4</color>
+    <!--<color name="colorAccent">#1ba195</color>-->
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="backgroundWhite">#EBEBEB</color>
+    <color name="sbc_list_item">#fffff0e0</color>
+    <color name="dark">#444444</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="grey">#9E9E9E</color>
+    <color name="l_grey">#d9d9d9</color>
+    <color name="light_grey">#EAEAEA</color> <!--浅灰色-->
+    <color name="light_light_grey">#EFEFEF</color> <!--浅灰色-->
+    <color name="light_cyan">#AADBE1</color>  <!--淡青色-->
+    <color name="red">#F04E4E</color>
+    <color name="pure_red">#FF0000</color>
+    <color name="transparent">#00000000</color>
+    <color name="light_light_blue">#7aaec9</color>
+    <color name="light_blue">#43bbf7</color>
+    <color name="pressed_light_blue">#097fba</color>
+    <color name="dark_blue">#4f596e</color>
+
+    <color name="pressed_grey">#9E9E9E</color>
+
+    <color name="purple_progress">#7d28d9</color>
+    <color name="blue_pressed">#2260e6</color>
+    <color name="blue_normal">#417af4</color>
+
+    <color name="green_complete">#20d447</color>
+    <color name="gray">#9E9E9E</color><!--灰色-->
+    <color name="item_title_color">#444444</color>
+    <color name="item_other_color">#9E9E9E</color>
+
+    <color name="item_divider">#EFEFEF</color>
+
+    <!--半透明color-->
+    <color name="transparent_dark">#ec121212</color>
+    <color name="transparent_white">#ecffffff</color>
+    <color name="transparent_green">#ec00de90</color>
+</resources>
