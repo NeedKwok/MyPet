@@ -5,7 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="textColorPrimary">#FFFFFF</color>
 
-    <!--建议用的app基色-->
+    <color name="colorMainGreen">#40cab3</color>
     <color name="baseColor">#43c2f4</color>
     <!--<color name="colorAccent">#1ba195</color>-->
     <color name="colorWhite">#FFFFFF</color>

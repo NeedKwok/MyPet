@@ -43,7 +43,6 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:src="@drawable/huaji"
                 android:layout_marginRight="25dp"
                 app:civ_border_color="#F3F3F3"
                 app:civ_border_width="1dp"/>
@@ -69,8 +68,7 @@
                 android:gravity="center_vertical"
                 android:layout_marginRight="10dp"
                 android:textSize="16sp"
-                android:layout_toLeftOf="@id/user_nick_name_IV"
-                android:text="周周周维"/>
+                android:layout_toLeftOf="@id/user_nick_name_IV" />
             <ImageView
                 android:id="@+id/user_nick_name_IV"
                 android:layout_width="wrap_content"
@@ -93,7 +91,7 @@
                 android:gravity="center_vertical"
                 android:layout_marginLeft="15dp"
                 android:textSize="16sp"
-                android:text="姓名 "/>
+                android:text="性别"/>
             <TextView
                 android:id="@+id/user_gender_TV"
                 android:layout_width="wrap_content"
@@ -101,8 +99,7 @@
                 android:gravity="center_vertical"
                 android:layout_marginRight="10dp"
                 android:textSize="16sp"
-                android:layout_toLeftOf="@id/user_gender_IV"
-                android:text="周周 "/>
+                android:layout_toLeftOf="@id/user_gender_IV" />
             <ImageView
                 android:id="@+id/user_gender_IV"
                 android:layout_width="wrap_content"

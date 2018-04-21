@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mypet">
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
     <application
         android:name=".utils.MyPetApplication"
         android:allowBackup="true"
@@ -10,6 +14,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.example.mypet.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name">
@@ -20,7 +35,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.UserInfoActivity" />
-        <activity android:name=".ui.ChangeInfoActivity"></activity>
+        <activity android:name=".ui.ChangeInfoActivity"/>
     </application>
+    <!--相机权限，sdcard读、写、访问相机、震动、闪光灯-->
+
 
 </manifest>

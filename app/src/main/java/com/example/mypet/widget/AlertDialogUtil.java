@@ -1,10 +1,12 @@
-package com.example.mypet.utils;
+package com.example.mypet.widget;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.widget.TextView;
+
+import com.example.mypet.utils.Constants;
+import com.example.mypet.utils.InfoPrefs;
 
 /**
  * 用法 constructor.fun1.fun2.……
@@ -13,7 +15,7 @@ public class AlertDialogUtil {
     private AlertDialog.Builder builder;
     private String[] items;
     private TextView textView;
-    String configName, infoItemName;
+    private String configName, infoItemName;
     //-1代表不要图片
     public AlertDialogUtil(Context context,int icon,String title){
         builder = new AlertDialog.Builder(context);
