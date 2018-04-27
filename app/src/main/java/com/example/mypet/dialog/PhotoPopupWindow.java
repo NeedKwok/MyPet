@@ -1,4 +1,4 @@
-package com.example.mypet.widget;
+package com.example.mypet.dialog;
 
 import android.app.Activity;
 import android.content.Context;

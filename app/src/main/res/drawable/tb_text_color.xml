@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_checked="true" android:color="@color/white"/>
+    <!--该颜色是半透明灰色，与主题字体颜色相近-->
+    <item android:color="#FF666666"/>
+
+</selector>

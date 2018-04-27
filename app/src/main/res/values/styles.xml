@@ -13,5 +13,24 @@
         <item name="android:windowEnterAnimation">@anim/popup_show</item>
         <item name="android:windowExitAnimation">@anim/popup_gone</item>
     </style>
+    <!--timepicker 字体颜色 -->
+    <style name="Theme.picker" parent="android:Theme.Holo.NoActionBar">
+        <item name="android:editTextStyle">@style/Widget.EditText.Black</item>
+    </style>
+
+    <style name="Widget.EditText.Black" parent="@android:style/Widget.EditText">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">30sp</item>
+    </style>
+    <!-- 周几 -->
+    <style name="alarm_clock_repeat_TB_background">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">38dp</item>
+        <item name="android:layout_height">38dp</item>
+        <item name="android:background">@drawable/tb_background</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@drawable/tb_text_color</item>
+        <!--<item name="android:textColor">@drawable/text_color_toggle_btn_circle</item>-->
+    </style>
 
 </resources>

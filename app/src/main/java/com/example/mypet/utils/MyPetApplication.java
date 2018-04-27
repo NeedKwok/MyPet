@@ -1,9 +1,9 @@
 package com.example.mypet.utils;
 
-import android.app.Application;
 import android.content.Context;
+import org.litepal.LitePalApplication;
 
-public class MyPetApplication extends Application {
+public class MyPetApplication extends LitePalApplication {
     private static Context context;
 
     @Override

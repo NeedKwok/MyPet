@@ -44,4 +44,5 @@
     <color name="transparent_dark">#ec121212</color>
     <color name="transparent_white">#ecffffff</color>
     <color name="transparent_green">#ec00de90</color>
+    <!--纯透明-->
 </resources>

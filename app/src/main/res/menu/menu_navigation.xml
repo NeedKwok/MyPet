@@ -5,9 +5,17 @@
         android:id="@+id/user_info"
         android:icon="@drawable/ic_account_circle_black_24dp"
         android:title="个人信息" />
-     <item
-        android:id="@+id/shop"
+    <item
+        android:id="@+id/pet_info"
+        android:icon="@drawable/ic_pets_black_24dp"
+        android:title="haha" />
+    <item
+        android:id="@+id/pet_shop"
         android:icon="@mipmap/ic_insert_emoticon_white_24dp"
+        android:title="haha" />
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/ic_settings_black_24dp"
         android:title="haha" />
     </group>
 

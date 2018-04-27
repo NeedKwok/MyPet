@@ -22,17 +22,17 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
+
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.mypet.widget.AlertDialogUtil;
+import com.example.mypet.dialog.ItemsAlertDialogUtil;
 import com.example.mypet.utils.Constants;
 import com.example.mypet.R;
 import com.example.mypet.bean.ChangeInfoBean;
 import com.example.mypet.utils.InfoPrefs;
-import com.example.mypet.widget.PhotoPopupWindow;
+import com.example.mypet.dialog.PhotoPopupWindow;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,6 +44,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private static final int REQUEST_IMAGE_GET = 0;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_SMALL_IMAGE_CUTTING = 2;
+    private static final int REQUEST_CHANGE_USER_NICK_NAME = 10;
     //private static final int REQUEST_BIG_IMAGE_CUTTING = 3;
     private static final String IMAGE_FILE_NAME = "user_head_icon.jpg";
 
@@ -65,6 +66,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         textView_user_nick_name = findViewById(R.id.user_nick_name_TV);
         textView_user_gender = findViewById(R.id.user_gender_TV);
         circleImageView_user_head = findViewById(R.id.user_head_iv);
+        InfoPrefs.init("user_info");
         init();
 
         relativeLayout_user_nick_name = findViewById(R.id.user_nick_name);
@@ -93,9 +95,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void init(){
-        InfoPrefs.init("user_info");
-        textView_user_nick_name.setText(InfoPrefs.getData("user_nick_name"));
-        textView_user_gender.setText(InfoPrefs.getData("user_gender"));
+        textView_user_nick_name.setText(InfoPrefs.getData(Constants.UserInfo.NAME));
+        textView_user_gender.setText(InfoPrefs.getData(Constants.UserInfo.GENDER));
         showHeadImage();
         //circleImageView_user_head.setImageURI();
     }
@@ -155,18 +156,21 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             case R.id.user_nick_name:
                 ChangeInfoBean bean = new ChangeInfoBean();
                 bean.setTitle("修改昵称");
-                bean.setConfigName("user_info");
-                bean.setInfoName("user_nick_name");
+                bean.setInfo(InfoPrefs.getData(Constants.UserInfo.NAME));
                 Intent intent = new Intent(UserInfoActivity.this,ChangeInfoActivity.class);
                 intent.putExtra("data", bean);
-                startActivity(intent);
+                startActivityForResult(intent,REQUEST_CHANGE_USER_NICK_NAME);
                 break;
 
             case R.id.user_gender:
-                new AlertDialogUtil(UserInfoActivity.this,-1,null)
-                        .setSettings("user_info","user_gender")
-                        .setTextView(textView_user_gender).setItems(Constants.GENDER).showDialog();
-                //refresh(textView_user_gender);
+                new ItemsAlertDialogUtil(UserInfoActivity.this).setItems(Constants.GENDER_ITEMS).
+                        setListener(new ItemsAlertDialogUtil.OnSelectFinishedListener() {
+                            @Override
+                            public void SelectFinished(int which) {
+                                InfoPrefs.setData(Constants.UserInfo.GENDER,Constants.GENDER_ITEMS[which]);
+                                textView_user_gender.setText(InfoPrefs.getData(Constants.UserInfo.GENDER));
+                            }
+                        }).showDialog();
                 break;
             default:
         }
@@ -177,7 +181,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         boolean isSdCardExist = Environment.getExternalStorageState().equals(
                 Environment.MEDIA_MOUNTED);// 判断sdcard是否存在
         if (isSdCardExist) {
-            String path = InfoPrefs.getData("user_head_uri");// 获取图片路径
+            String path = InfoPrefs.getData(Constants.UserInfo.HEAD_IMAGE);// 获取图片路径
 
             File file = new File(path);
             if (file.exists()) {
@@ -217,6 +221,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     File temp = new File(Environment.getExternalStorageDirectory() + File.separator + IMAGE_FILE_NAME);
                     startSmallPhotoZoom(Uri.fromFile(temp));
                     break;
+                // 获取changeinfo销毁后回传的数据
+                case REQUEST_CHANGE_USER_NICK_NAME:
+                    String returnData = data.getStringExtra("data_return");
+                    InfoPrefs.setData(Constants.UserInfo.NAME,returnData);
+                    break;
+                default:
             }
         }
     }
@@ -289,6 +299,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
         startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
     }
+
     public void setPicToView(Intent data) {
         Bundle extras = data.getExtras();
         if (extras != null) {
@@ -305,7 +316,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     }
                 }
                 File file = new File(dirFile, IMAGE_FILE_NAME);
-                InfoPrefs.setData("user_head_uri",file.getPath());
+                InfoPrefs.setData(Constants.UserInfo.HEAD_IMAGE,file.getPath());
                 Log.e("result",file.getPath());
                 Log.e("result",file.getAbsolutePath());
                 // 保存图片
@@ -321,7 +332,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             }
             // 在视图中显示图片
             showHeadImage();
-            //circleImageView_user_head.setImageBitmap(InfoPrefs.getData("user_head_uri"));
+            //circleImageView_user_head.setImageBitmap(InfoPrefs.getData(Constants.UserInfo.GEAD_IMAGE));
         }
     }
 
@@ -357,7 +368,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
 
 //头像相关到此结束
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

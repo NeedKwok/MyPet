@@ -11,9 +11,11 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.mypet.R;
+import com.example.mypet.utils.PickerUtil;
 
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent it = new Intent(MainActivity.this,UserInfoActivity.class);
                         startActivity(it);
                         break;
-                    case R.id.shop:
+                    case R.id.pet_shop:
                         break;
                     default:
                 }
@@ -81,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
             case R.id.item1:
-                //
+                Intent it = new Intent(MainActivity.this,NewAlarmClockActivity.class);
+                startActivity(it);
                 break;
             default:
         }

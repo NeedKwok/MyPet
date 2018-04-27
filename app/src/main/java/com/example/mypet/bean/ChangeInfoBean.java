@@ -5,16 +5,9 @@ import android.os.Parcelable;
 
 public class ChangeInfoBean implements Parcelable {
     private String title;
-    private String infoName;
-    private String configName;
+    private String info;
+    //private String configName;
 
-    public String getConfigName() {
-        return configName;
-    }
-
-    public void setConfigName(String configName) {
-        this.configName = configName;
-    }
 
     public String getTitle() {
         return title;
@@ -24,12 +17,12 @@ public class ChangeInfoBean implements Parcelable {
         this.title = title;
     }
 
-    public String getInfoName() {
-        return infoName;
+    public String getInfo() {
+        return info;
     }
 
-    public void setInfoName(String infoName) {
-        this.infoName = infoName;
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @Override
@@ -40,8 +33,7 @@ public class ChangeInfoBean implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title);
-        dest.writeString(infoName);
-        dest.writeString(configName);
+        dest.writeString(info);
     }
     public static final Parcelable.Creator<ChangeInfoBean> CREATOR = new Parcelable.Creator<ChangeInfoBean>(){
 
@@ -49,8 +41,7 @@ public class ChangeInfoBean implements Parcelable {
         public ChangeInfoBean createFromParcel(Parcel source) {
             ChangeInfoBean changeInfoBean = new ChangeInfoBean();
             changeInfoBean.title = source.readString();
-            changeInfoBean.infoName = source.readString();
-            changeInfoBean.configName = source.readString();
+            changeInfoBean.info = source.readString();
             return changeInfoBean;
         }
 
