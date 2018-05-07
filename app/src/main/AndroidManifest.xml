@@ -9,7 +9,12 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
-
+    <!-- 蓝牙权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!--悬浮窗-->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.GET_TASKS" />
     <application
         android:name=".utils.MyPetApplication"
         android:allowBackup="true"
@@ -18,6 +23,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!--监听微信新消息的权限部分-->
+        <!--注册Service,通过meta-data配置-->
+        <!--监听指定package "com.tencent.mm"-->
+        <service
+            android:name=".service.mmwechatListenerService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility"/>
+        </service>
+        <!--悬浮窗服务注册-->
+        <service
+            android:name=".service.PetWindowService">
+        </service>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.mypet.fileprovider"
@@ -41,12 +67,9 @@
         <activity android:name=".ui.ChangeInfoActivity" />
         <activity android:name=".ui.NewAlarmClockActivity" />
 
-        <receiver android:name=".receiver.MyPetReceiver">
+        <activity android:name=".ui.MusicSelectActivity" />
+        <activity android:name=".ui.BLTinfoActivity" />
 
-            <!-- something need -->
-        </receiver>
-
-        <activity android:name=".ui.MusicSelectActivity"></activity>
     </application>
 
 </manifest>

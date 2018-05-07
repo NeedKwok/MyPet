@@ -19,6 +19,7 @@ android {
 }
 
 dependencies {
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.12'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
