@@ -31,4 +31,5 @@ dependencies {
     implementation 'org.litepal.android:core:1.6.0'
     implementation 'com.astuetz:pagerslidingtabstrip:1.0.1'
     implementation 'com.kyleduo.switchbutton:library:2.0.0'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.12'
 }

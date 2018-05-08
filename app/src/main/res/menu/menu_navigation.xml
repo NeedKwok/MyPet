@@ -6,17 +6,25 @@
         android:icon="@drawable/ic_account_circle_black_24dp"
         android:title="个人信息" />
     <item
-        android:id="@+id/pet_info"
+        android:id="@+id/pet_switch"
         android:icon="@drawable/ic_pets_black_24dp"
-        android:title="haha" />
+        android:title="宠物开关" />
     <item
-        android:id="@+id/pet_shop"
+        android:id="@+id/alarm_clock"
+        android:icon="@drawable/ic_alarm_black_24dp"
+        android:title="宠物闹钟"/>
+    <item
+        android:id="@+id/pet_mmListen"
         android:icon="@mipmap/ic_insert_emoticon_white_24dp"
-        android:title="haha" />
+        android:title="微信消息" />
+    <item
+        android:id="@+id/pet_blt"
+        android:icon="@drawable/ic_bluetooth_black_24dp"
+        android:title="蓝牙配对" />
     <item
         android:id="@+id/settings"
         android:icon="@drawable/ic_settings_black_24dp"
-        android:title="haha" />
-    </group>
+        android:title="系统设置" />
+   </group>
 
 </menu>

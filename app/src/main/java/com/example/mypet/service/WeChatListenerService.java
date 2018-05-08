@@ -11,7 +11,8 @@ import java.util.List;
 /**
  * Created by Ma5ker on 05/04/18.
  */
-public class mmwechatListenerService extends AccessibilityService {
+public class WeChatListenerService extends AccessibilityService {
+    private static final String TAG = "WeChatListenerService";
     public static boolean isRunning = false;//是否运行
     //微信包名
     //private String mmPge = "com.tencent.mm";

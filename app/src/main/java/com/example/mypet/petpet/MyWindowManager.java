@@ -3,21 +3,16 @@ package com.example.mypet.petpet;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Build;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import com.example.mypet.R;
-
-import pl.droidsonroids.gif.GifImageView;
-
 /**
  * Created by Ma5ker on 05/06/18.
  */
 
 public class MyWindowManager {
+    private static final String TAG = "MyWindowManager";
     //悬浮窗实例
     private static FloatWindowView floatWindow;
 

@@ -3,7 +3,6 @@ package com.example.mypet.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.example.mypet.bean.AlarmClockItemInfo;
@@ -14,7 +13,7 @@ import org.litepal.crud.DataSupport;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
+
 
 public class ClockReceiver extends BroadcastReceiver {
     private static final String TAG = "ClockReceiver";
@@ -28,6 +27,9 @@ public class ClockReceiver extends BroadcastReceiver {
             Log.d(TAG,"闹钟为空");
         }else{
             for(AlarmClockItemInfo itemInfo:alarmClockItemInfoList){
+                if(itemInfo.getIsEnable() == 0){
+                    continue;
+                }
                 Log.d(TAG,"curTime:"+new Date(curTime).toString());
                 long nextClock = TimeCalculationUtil
                         .calculateNextTimeForStartClock(curTime,itemInfo.getHour(),

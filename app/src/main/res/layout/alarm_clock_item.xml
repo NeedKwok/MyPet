@@ -30,14 +30,13 @@
             android:id="@+id/clock_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:textSize="12sp"
             android:layout_below="@id/clock_repeat"
             android:text="起床"/>
     </RelativeLayout>
 
     <com.kyleduo.switchbutton.SwitchButton
-        android:id="@+id/sb_show_pet"
+        android:id="@+id/clock_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

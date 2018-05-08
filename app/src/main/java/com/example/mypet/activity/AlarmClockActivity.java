@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import com.example.mypet.R;
 
 public class AlarmClockActivity extends AppCompatActivity {
+    private static final String TAG = "AlarmClockActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

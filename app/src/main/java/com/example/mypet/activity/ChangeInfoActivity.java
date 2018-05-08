@@ -13,6 +13,7 @@ import com.example.mypet.R;
 import com.example.mypet.bean.ChangeInfoBean;
 
 public class ChangeInfoActivity extends AppCompatActivity {
+    private static final String TAG = "ChangeInfoActivity";
     ChangeInfoBean settings;
     EditText editText;
     //SharedPreferences sp;

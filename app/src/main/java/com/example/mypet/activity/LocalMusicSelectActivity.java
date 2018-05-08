@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocalMusicSelectActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+    private static final String TAG = "LocalMusicSelectActivity";
     private static final int LOADER = 1;
     List<MusicInfo> localMusicList = new ArrayList<>();
 

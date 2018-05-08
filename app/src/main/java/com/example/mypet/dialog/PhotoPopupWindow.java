@@ -13,6 +13,7 @@ import android.widget.PopupWindow;
 import com.example.mypet.R;
 
 public class PhotoPopupWindow extends PopupWindow {
+    private static final String TAG = "PhotoPopupWindow";
     private View mView; // PopupWindow 菜单布局
     private Context mContext; // 上下文参数
     private View.OnClickListener mSelectListener; // 相册选取的点击监听器

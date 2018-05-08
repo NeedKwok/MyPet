@@ -21,6 +21,12 @@ public class AlarmClockItemInfo extends DataSupport{
     private int musicFrom;
     //标签
     private String label;
+    //是否开启
+    private int isEnable;
+
+    public AlarmClockItemInfo() {
+        isEnable = 1;
+    }
 
     public String getMusicUri() {
         return musicUri;
@@ -93,4 +99,8 @@ public class AlarmClockItemInfo extends DataSupport{
     public void setLabel(String label) {
         this.label = label;
     }
+
+    public int getIsEnable() { return isEnable; }
+
+    public void setIsEnable(int isEnable) { this.isEnable = isEnable; }
 }

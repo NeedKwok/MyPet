@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
  * Created by Ma5ker on 05/08/18.
  */
 public class MsgWindowView extends RelativeLayout {
+    private static final String TAG = "MsgWindowView";
 
     //消息文本框和整个的layout
     private TextView msg_text;
@@ -52,7 +53,7 @@ public class MsgWindowView extends RelativeLayout {
     public MsgWindowView(Context context){
         super(context);
         this.context=context;
-        View view= LayoutInflater.from(context).inflate(R.layout.pet_message_window,this);
+        View view= LayoutInflater.from(context).inflate(R.layout.msg_window,this);
         msg_text=view.findViewById(R.id.msg_textview);
         msg_window=view.findViewById(R.id.msg_window);
         statusBarHeight=getStatusBarHeight();

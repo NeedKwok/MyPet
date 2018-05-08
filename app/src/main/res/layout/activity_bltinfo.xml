@@ -6,16 +6,17 @@
     android:layout_height="match_parent"
     android:background="@color/backgroundWhite"
     android:orientation="vertical"
-    tools:context=".activity.BLTinfoActivity">
+    tools:context=".activity.BlueToothInfoActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_userinfo"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/actionbar_size"
+        android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="蓝牙连接"></android.support.v7.widget.Toolbar>
+        app:title="蓝牙连接">
+    </android.support.v7.widget.Toolbar>
 
     <RelativeLayout
         android:id="@+id/blt_name"

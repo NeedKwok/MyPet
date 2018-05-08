@@ -3,6 +3,7 @@ package com.example.mypet.activity;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Intent;
 import android.os.Build;
+import android.provider.AlarmClock;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -18,12 +19,13 @@ import android.view.accessibility.AccessibilityManager;
 import android.widget.Toast;
 
 import com.example.mypet.service.PetWindowService;
-import com.example.mypet.service.mmwechatListenerService;
+import com.example.mypet.service.WeChatListenerService;
 import com.example.mypet.R;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
     private DrawerLayout mDrawerLayout;
     //Accessibility权限标志
     private boolean accessibilityIsOpen = false;
@@ -74,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mmwechatListenerService.isRunning = true;
-                                    startService(new Intent(MainActivity.this, mmwechatListenerService.class));
+                                    WeChatListenerService.isRunning = true;
+                                    startService(new Intent(MainActivity.this, WeChatListenerService.class));
                                 }
                             }).start();
                         } else {
@@ -84,9 +86,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                     case R.id.pet_blt:
-                        Intent blt = new Intent(MainActivity.this, BLTinfoActivity.class);
+                        Intent blt = new Intent(MainActivity.this, BlueToothInfoActivity.class);
                         startActivity(blt);
                         break;
+                    case R.id.alarm_clock:
+                        Intent alarm_intent = new Intent(MainActivity.this, AlarmClockActivity.class);
+                        startActivity(alarm_intent);
                     default:
                 }
                 mDrawerLayout.closeDrawers();
@@ -112,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_toolbar, menu);
         return super.onCreateOptionsMenu(menu);
@@ -131,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             default:
         }
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     //Accessibility权限检查
     private boolean checkAccessibilityPermission() {
@@ -139,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         List<AccessibilityServiceInfo> accessibilityServices = accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_GENERIC);
         //遍历所有的AccessibilityService 如果没有本服务，则表示没开启
         for (AccessibilityServiceInfo info : accessibilityServices) {
-            if (info.getId().equals("com.example.mypet/.service.mmwechatListenerService")) {
+            if (info.getId().equals("com.example.mypet/.service.WeChatListenerService")) {
                 accessibilityIsOpen = true;
                 return true;
             }
@@ -163,10 +168,10 @@ public class MainActivity extends AppCompatActivity {
                 AccessibilityManager accessibilityManager = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
                 List<AccessibilityServiceInfo> accessibilityServices = accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_GENERIC);
                 for (AccessibilityServiceInfo info : accessibilityServices) {
-                    if (info.getId().equals("com.example.mypet/.service.mmwechatListenerService")) {
+                    if (info.getId().equals("com.example.mypet/.service.WeChatListenerService")) {
                         accessibilityIsOpen = true;
-                        mmwechatListenerService.isRunning = true;
-                        startService(new Intent(this, mmwechatListenerService.class));
+                        WeChatListenerService.isRunning = true;
+                        startService(new Intent(this, WeChatListenerService.class));
                         Toast.makeText(this, "微信消息提醒已开启", Toast.LENGTH_SHORT).show();
                         return;
                     }

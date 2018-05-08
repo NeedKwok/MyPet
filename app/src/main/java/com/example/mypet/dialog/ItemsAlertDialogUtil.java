@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 
 public class  ItemsAlertDialogUtil  {
+    private static final String TAG = "ItemAlertDialogUtil";
     private AlertDialog.Builder builder;
     private String[] items;
     private OnSelectFinishedListener mListener;

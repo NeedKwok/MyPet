@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SystemRingSelectActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+    private static final String TAG = "SystemRingSelectActivity";
     private static final int REQUEST_CHANGE_ALARM_CLOCK_MUSIC = 10;
     private static final int LOADER = 1;
     List<MusicInfo> systemRingList = new ArrayList<>();

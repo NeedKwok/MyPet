@@ -22,6 +22,7 @@ import com.example.mypet.bean.AlarmClockItemInfo;
 import com.example.mypet.bean.ChangeInfoBean;
 import com.example.mypet.dialog.ItemsAlertDialogUtil;
 import com.example.mypet.utils.Constants;
+import com.example.mypet.utils.FormatUtil;
 import com.example.mypet.utils.PickerUtil;
 import com.example.mypet.utils.RingUtil;
 import com.example.mypet.utils.TimeCalculationUtil;
@@ -33,6 +34,8 @@ import static android.media.RingtoneManager.TYPE_ALARM;
 
 public class NewAlarmClockActivity extends AppCompatActivity implements
         View.OnClickListener,CompoundButton.OnCheckedChangeListener {
+    private static final String TAG = "NewAlarmClockActivity";
+
     private static final int REQUEST_CHANGE_ALARM_CLOCK_LABEL = 10;
     private static final int REQUEST_CHANGE_ALARM_CLOCK_RING = 11;
     TextView textView_alarm_clock_repeat;
@@ -145,12 +148,7 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
         if(item.getLabel() == null)
             textView_alarm_clock_label.setText(Constants.DEFAULT_LABEL);
         else {//最多只显示8个字    在setText中不要写太多字符串操作
-            String text;
-            if(item.getLabel().length() > 8) {
-                text = item.getLabel().substring(0, 8) + "……";
-                textView_alarm_clock_label.setText(text);
-            } else
-                textView_alarm_clock_label.setText(item.getLabel());
+            textView_alarm_clock_label.setText(FormatUtil.lessThan8Words(item.getLabel()));
         }
     }
 
@@ -447,34 +445,8 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
     }
 
     private void changeRepeatText() {
-        int repeat = item.getRepeat();
-        if(repeat == 0x0)
-            textView_alarm_clock_repeat.setText(Constants.ONLY_ONCE);
-        else if(repeat == 0x11111117)
-            textView_alarm_clock_repeat.setText(Constants.EVERYDAY);
-        else if(repeat == 0x11111005)
-            textView_alarm_clock_repeat.setText(Constants.WEEKDAY);
-        else if(repeat == 0x00000112)
-            textView_alarm_clock_repeat.setText(Constants.WEEKEND);
-        else{
-            String text = "";
-            if((repeat & 0x10000000) > 0)
-                text = text + "、一";
-            if((repeat & 0x01000000) > 0)
-                text = text + "、二";
-            if((repeat & 0x00100000) > 0)
-                text = text + "、三";
-            if((repeat & 0x00010000) > 0)
-                text = text + "、四";
-            if((repeat & 0x00001000) > 0)
-                text = text + "、五";
-            if((repeat & 0x00000100) > 0)
-                text = text + "、六";
-            if((repeat & 0x00000010) > 0)
-                text = text + "、日";
-            text = text.replaceFirst("、","周");
-            textView_alarm_clock_repeat.setText(text);
-        }
+        String text = FormatUtil.getRepeatText(item.getRepeat());
+        textView_alarm_clock_repeat.setText(text);
     }
     // [start,end) = true ,else = false
     private void toggleButtonChange(int start,int end){

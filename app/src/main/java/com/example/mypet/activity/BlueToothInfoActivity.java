@@ -32,7 +32,8 @@ import java.io.PrintWriter;
 import java.util.Set;
 import java.util.UUID;
 
-public class BLTinfoActivity extends AppCompatActivity {
+public class BlueToothInfoActivity extends AppCompatActivity {
+        private static final String TAG = "BlueToothInfoActivity";
     private RelativeLayout name_show;
     private RelativeLayout number_show;
     private RelativeLayout blt_selectinfo;
@@ -109,13 +110,13 @@ public class BLTinfoActivity extends AppCompatActivity {
                 case R.id.as_server:
                     //开启服务器
                     startServer();
-                    Toast.makeText(BLTinfoActivity.this, "选择了server", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BlueToothInfoActivity.this, "选择了server", Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.as_client:
                     //开启客户端
                     startServer();
                     startClient();
-                    Toast.makeText(BLTinfoActivity.this, "选择了client", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BlueToothInfoActivity.this, "选择了client", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -165,7 +166,7 @@ public class BLTinfoActivity extends AppCompatActivity {
             // Get a BluetoothSocket for a connection with the
             // given BluetoothDevice
             try {
-                tmp = device.createRfcommSocketToServiceRecord(BLTinfoActivity.MY_UUID);
+                tmp = device.createRfcommSocketToServiceRecord(BlueToothInfoActivity.MY_UUID);
             } catch (IOException e) {
                 mkmsg("Client connection failed: "+e.getMessage()+"\n");
             }
@@ -248,7 +249,7 @@ public class BLTinfoActivity extends AppCompatActivity {
             BluetoothServerSocket tmp = null;
             // Create a new listening server socket
             try {
-                tmp = bltAdapter.listenUsingRfcommWithServiceRecord(BLTinfoActivity.NAME, BLTinfoActivity.MY_UUID);
+                tmp = bltAdapter.listenUsingRfcommWithServiceRecord(BlueToothInfoActivity.NAME, BlueToothInfoActivity.MY_UUID);
             } catch (IOException e) {
                 mkmsg("Failed to start server\n");
             }
