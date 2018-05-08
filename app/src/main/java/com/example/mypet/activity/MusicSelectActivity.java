@@ -1,4 +1,4 @@
-package com.example.mypet.ui;
+package com.example.mypet.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

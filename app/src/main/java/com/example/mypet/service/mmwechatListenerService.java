@@ -4,6 +4,8 @@ import android.accessibilityservice.AccessibilityService;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
+import com.example.mypet.petpet.MyWindowManager;
+
 import java.util.List;
 
 /**
@@ -38,7 +40,8 @@ public class mmwechatListenerService extends AccessibilityService {
         if (!texts.isEmpty()) {
             for (CharSequence text : texts) {
                 String content = text.toString();
-                Log.e("mmWechat", "微信新消息:  " + content);
+                //创建消息框
+                MyWindowManager.createMsgWindow(getApplicationContext(),content);
             }
         }
     }

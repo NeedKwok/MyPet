@@ -1,4 +1,4 @@
-package com.example.mypet.ui;
+package com.example.mypet.activity;
 
 import android.Manifest;
 import android.content.Intent;

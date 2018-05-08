@@ -1,4 +1,4 @@
-package com.example.mypet.ui;
+package com.example.mypet.activity;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
