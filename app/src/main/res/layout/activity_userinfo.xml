@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundWhite"
-    tools:context=".ui.UserInfoActivity">
+    tools:context=".activity.UserInfoActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_userinfo"

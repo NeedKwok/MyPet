@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MyPet</string>
+
+    <string name="system_music">系统铃声</string>
+    <string name="local_music">本地音乐</string>
+    <string name="record">录音</string>
 </resources>

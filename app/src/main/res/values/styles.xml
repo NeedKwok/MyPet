@@ -18,6 +18,13 @@
         <item name="android:editTextStyle">@style/Widget.EditText.Black</item>
     </style>
 
+    <style name="SwitchButtonStyle">
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
     <style name="Widget.EditText.Black" parent="@android:style/Widget.EditText">
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:textSize">30sp</item>
@@ -30,7 +37,7 @@
         <item name="android:background">@drawable/tb_background</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@drawable/tb_text_color</item>
-        <!--<item name="android:textColor">@drawable/text_color_toggle_btn_circle</item>-->
+
     </style>
 
 </resources>

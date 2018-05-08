@@ -1,6 +1,8 @@
-package com.example.mypet.ui;
+package com.example.mypet.activity;
 
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,18 +17,24 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
 import com.example.mypet.R;
 import com.example.mypet.bean.AlarmClockItemInfo;
 import com.example.mypet.bean.ChangeInfoBean;
 import com.example.mypet.dialog.ItemsAlertDialogUtil;
 import com.example.mypet.utils.Constants;
 import com.example.mypet.utils.PickerUtil;
-
+import com.example.mypet.utils.RingUtil;
+import com.example.mypet.utils.TimeCalculationUtil;
+import org.litepal.LitePal;
 import java.util.Calendar;
 
-public class NewAlarmClockActivity extends AppCompatActivity implements View.OnClickListener,CompoundButton.OnCheckedChangeListener {
+
+import static android.media.RingtoneManager.TYPE_ALARM;
+
+public class NewAlarmClockActivity extends AppCompatActivity implements
+        View.OnClickListener,CompoundButton.OnCheckedChangeListener {
     private static final int REQUEST_CHANGE_ALARM_CLOCK_LABEL = 10;
+    private static final int REQUEST_CHANGE_ALARM_CLOCK_RING = 11;
     TextView textView_alarm_clock_repeat;
     TextView textView_alarm_clock_label;
     TextView textView_alarm_clock_remind;
@@ -143,7 +151,6 @@ public class NewAlarmClockActivity extends AppCompatActivity implements View.OnC
                 textView_alarm_clock_label.setText(text);
             } else
                 textView_alarm_clock_label.setText(item.getLabel());
-            //Log.e("result","-"+item.getLabel().length());
         }
     }
 
@@ -171,7 +178,26 @@ public class NewAlarmClockActivity extends AppCompatActivity implements View.OnC
     }
 
     private void initMusic(){
+       /* InfoPrefs.init("settings");
+        if(InfoPrefs.getIntData("first_use_alarm_clock") == 0){
+            //第一次使用闹钟
 
+        }*/
+        RelativeLayout relativeLayout_alarm_clock_music = findViewById(R.id.alarm_clock_music);
+        textView_alarm_clock_music = findViewById(R.id.alarm_clock_music_TV);
+        String uri = RingtoneManager.getActualDefaultRingtoneUri(this, TYPE_ALARM).toString();
+        String title = RingtoneManager.getRingtone(this, Uri.parse(uri)).getTitle(this);
+        item.setMusicName(title);
+        item.setMusicFrom(0);
+        item.setMusicUri(uri);
+        refreshMusic();
+        relativeLayout_alarm_clock_music.setOnClickListener(this);
+
+    }
+
+    private void refreshMusic() {
+        String music = item.getMusicName();
+        textView_alarm_clock_music.setText(RingUtil.formatTitle(music));
     }
 
     private void initSnooze() {
@@ -217,23 +243,52 @@ public class NewAlarmClockActivity extends AppCompatActivity implements View.OnC
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item1) {
+        switch(item1.getItemId()){
             case android.R.id.home:
                 finish();
                 break;
             case R.id.confirm:
+                LitePal.deleteDatabase("MyPet");
+                item.save();
+                String nextClock = timeCalculation();
 
-                Toast.makeText(NewAlarmClockActivity.this,"you clicked confirm!",Toast.LENGTH_LONG).show();
+                Toast.makeText(NewAlarmClockActivity.this,nextClock,Toast.LENGTH_LONG).show();
                 /**
                  * 做两件事 1是存数据litepal,2是toast显示响铃时间
                  */
-
                 //Toast.makeText(ChangeInfoActivity.this,sp.getString(settings.getInfoName(),"nothing!"),Toast.LENGTH_LONG).show();
                 finish();
                 break;
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item1);
+    }
+
+    private String  timeCalculation() {
+        long now = System.currentTimeMillis();
+        long nextClock = TimeCalculationUtil.calculateNextTime(item.getHour(),item.getMinute(),item.getRepeat());
+
+        // 距离下次响铃间隔毫秒数
+        long ms = nextClock - now;
+
+        // 单位秒
+        int ss = 1000;
+        // 单位分
+        int mm = ss * 60;
+        // 单位小时
+        int hh = mm * 60;
+        // 单位天
+        int dd = hh * 24;
+        // 不计算秒，故响铃间隔加一分钟
+        ms += mm;
+        // 剩余天数
+        long remainDay = ms / dd;
+        // 剩余小时
+        long remainHour = (ms - remainDay * dd) / hh;
+        // 剩余分钟
+        long remainMinute = (ms - remainDay * dd - remainHour * hh) / mm;
+
+        return TimeCalculationUtil.nextClockToastText(remainDay,remainHour,remainMinute);
     }
 
 
@@ -266,6 +321,7 @@ public class NewAlarmClockActivity extends AppCompatActivity implements View.OnC
                             }
                         }).showDialog();
                 break;
+
             case R.id.alarm_clock_label:
                 ChangeInfoBean bean = new ChangeInfoBean();
                 bean.setTitle("修改标签");
@@ -274,6 +330,7 @@ public class NewAlarmClockActivity extends AppCompatActivity implements View.OnC
                 intent.putExtra("data",bean);
                 startActivityForResult(intent,REQUEST_CHANGE_ALARM_CLOCK_LABEL);
                 break;
+
             case R.id.alarm_clock_remind:
                 new ItemsAlertDialogUtil(NewAlarmClockActivity.this).setItems(Constants.REMINDING)
                         .setListener(new ItemsAlertDialogUtil.OnSelectFinishedListener() {
@@ -284,6 +341,18 @@ public class NewAlarmClockActivity extends AppCompatActivity implements View.OnC
                             }
                         }).showDialog();
                 break;
+
+            case R.id.alarm_clock_music:
+                String title = item.getMusicName();
+                String uri = item.getMusicUri();
+                int from = item.getMusicFrom();
+                Intent intent1 = new Intent(NewAlarmClockActivity.this,SystemRingSelectActivity.class);
+                intent1.putExtra("ring_title",title);
+                intent1.putExtra("ring_uri",uri);
+                intent1.putExtra("ring_from",from);
+                startActivityForResult(intent1,REQUEST_CHANGE_ALARM_CLOCK_RING);
+                break;
+
             case R.id.alarm_clock_snooze:
                 new ItemsAlertDialogUtil(NewAlarmClockActivity.this,"小睡间隔").setItems(Constants.SNOOZE)
                         .setListener(new ItemsAlertDialogUtil.OnSelectFinishedListener() {
@@ -316,6 +385,7 @@ public class NewAlarmClockActivity extends AppCompatActivity implements View.OnC
                                 refreshSnooze();
                             }
                         }).showDialog();
+
             default:
         }
 
@@ -330,6 +400,11 @@ public class NewAlarmClockActivity extends AppCompatActivity implements View.OnC
                     item.setLabel(returnData);
                     refreshLabel();
                     break;
+                case REQUEST_CHANGE_ALARM_CLOCK_RING:
+                    item.setMusicUri(data.getStringExtra("ring_uri"));
+                    item.setMusicName(data.getStringExtra("ring_title"));
+                    item.setMusicFrom(data.getIntExtra("ring_from",0));
+                    refreshMusic();
                 default:
             }
         }
@@ -370,50 +445,9 @@ public class NewAlarmClockActivity extends AppCompatActivity implements View.OnC
         }
         changeRepeatText();
     }
-    /**  弃用的方法
-    private void changeRepeatSelect() {
-        int repeat = item.getRepeat();
-        if(repeat == 0x0){
-            toggleButton_alarm_clock_repeat_monday.setChecked(false);
-            toggleButton_alarm_clock_repeat_tuesday.setChecked(false);
-            toggleButton_alarm_clock_repeat_wednesday.setChecked(false);
-            toggleButton_alarm_clock_repeat_thursday.setChecked(false);
-            toggleButton_alarm_clock_repeat_friday.setChecked(false);
-            toggleButton_alarm_clock_repeat_saturday.setChecked(false);
-            toggleButton_alarm_clock_repeat_sunday.setChecked(false);
-        }
-        else if(repeat == 0x11111117){
-            toggleButton_alarm_clock_repeat_monday.setChecked(true);
-            toggleButton_alarm_clock_repeat_tuesday.setChecked(true);
-            toggleButton_alarm_clock_repeat_wednesday.setChecked(true);
-            toggleButton_alarm_clock_repeat_thursday.setChecked(true);
-            toggleButton_alarm_clock_repeat_friday.setChecked(true);
-            toggleButton_alarm_clock_repeat_saturday.setChecked(true);
-            toggleButton_alarm_clock_repeat_sunday.setChecked(true);
-        }
-        else if(repeat == 0x11111005){
-            toggleButton_alarm_clock_repeat_monday.setChecked(true);
-            toggleButton_alarm_clock_repeat_tuesday.setChecked(true);
-            toggleButton_alarm_clock_repeat_wednesday.setChecked(true);
-            toggleButton_alarm_clock_repeat_thursday.setChecked(true);
-            toggleButton_alarm_clock_repeat_friday.setChecked(true);
-            toggleButton_alarm_clock_repeat_saturday.setChecked(false);
-            toggleButton_alarm_clock_repeat_sunday.setChecked(false);
-        }
-        else if(repeat == 0x00000112){
-            toggleButton_alarm_clock_repeat_monday.setChecked(false);
-            toggleButton_alarm_clock_repeat_tuesday.setChecked(false);
-            toggleButton_alarm_clock_repeat_wednesday.setChecked(false);
-            toggleButton_alarm_clock_repeat_thursday.setChecked(false);
-            toggleButton_alarm_clock_repeat_friday.setChecked(false);
-            toggleButton_alarm_clock_repeat_saturday.setChecked(true);
-            toggleButton_alarm_clock_repeat_sunday.setChecked(true);
-        }
-    }*/
 
     private void changeRepeatText() {
         int repeat = item.getRepeat();
-        //Log.e("result",""+repeat);
         if(repeat == 0x0)
             textView_alarm_clock_repeat.setText(Constants.ONLY_ONCE);
         else if(repeat == 0x11111117)

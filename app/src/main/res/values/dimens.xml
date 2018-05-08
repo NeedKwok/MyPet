@@ -27,7 +27,7 @@
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_tiny">2dp</dimen>
 
-    <dimen name="actionbar_size">42dp</dimen>
+    <!--<dimen name="actionbar_size">42dp</dimen>-->
     <dimen name="fab_margin">16dp</dimen>
 
     <!--listView中相应的高度和字体大小-->

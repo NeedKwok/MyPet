@@ -19,6 +19,7 @@ import static com.example.mypet.R.color.colorPrimary;
 
 
 public class PickerUtil {
+    private static final String TAG = "PickerUtil";
 
     @SuppressLint("ResourceAsColor")
     public static void deleteDivider(TimePicker timePicker){
@@ -50,7 +51,7 @@ public class PickerUtil {
                 numberPicker.invalidate();
             }
             catch(NoSuchFieldException | IllegalAccessException | IllegalArgumentException e){
-                Log.e("result",e.toString());
+                Log.e(TAG,e.toString());
             }
         }
     }

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundWhite"
-    tools:context=".ui.NewAlarmClockActivity">
+    tools:context=".activity.NewAlarmClockActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_new_alarm_clock"
@@ -228,6 +228,7 @@
                 android:background="@drawable/bg_info_rl">
 
                 <TextView
+                    android:id="@+id/tv1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
@@ -241,7 +242,9 @@
                     android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:layout_toLeftOf="@id/alarm_clock_music_IV"
-                    android:gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/tv1"
+                    android:gravity="center_vertical|end"
                     android:textSize="16sp" />
 
                 <ImageView

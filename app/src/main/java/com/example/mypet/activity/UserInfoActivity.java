@@ -1,4 +1,4 @@
-package com.example.mypet.ui;
+package com.example.mypet.activity;
 
 import android.Manifest;
 import android.content.Intent;
@@ -38,9 +38,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-//import com.example.mypet.utils.InfoPrefs;
 
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener{
+    private static final String TAG = "UserInfoActivity";
     private static final int REQUEST_IMAGE_GET = 0;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_SMALL_IMAGE_CUTTING = 2;
@@ -129,9 +129,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                         }
                     }
                 }, new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick (View v){
+                {
+                    @Override
+                    public void onClick (View v){
                         // 拍照及文件权限申请
                         if (ContextCompat.checkSelfPermission(UserInfoActivity.this,
                                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
@@ -310,15 +310,15 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 File dirFile = new File(storage + "/smallIcon");
                 if (!dirFile.exists()) {
                     if (!dirFile.mkdirs()) {
-                        Log.e("TAG", "文件夹创建失败");
+                        Log.d(TAG, "in setPicToView->文件夹创建失败");
                     } else {
-                        Log.e("TAG", "文件夹创建成功");
+                        Log.d(TAG, "in setPicToView->文件夹创建成功");
                     }
                 }
                 File file = new File(dirFile, IMAGE_FILE_NAME);
                 InfoPrefs.setData(Constants.UserInfo.HEAD_IMAGE,file.getPath());
-                Log.e("result",file.getPath());
-                Log.e("result",file.getAbsolutePath());
+                //Log.d("result",file.getPath());
+               // Log.d("result",file.getAbsolutePath());
                 // 保存图片
                 FileOutputStream outputStream = null;
                 try {
@@ -380,4 +380,3 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         return super.onOptionsItemSelected(item);
     }
 }
-
