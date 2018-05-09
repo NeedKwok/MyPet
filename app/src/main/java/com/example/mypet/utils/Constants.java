@@ -62,4 +62,9 @@ public final class Constants {
     public static final int CODE_HALF_HOUR = 30;
 
     public static final String[] SNOOZE = {NO_SNOOZE,ONE_MINUTE,THREE_MINUTES,FIVE_MINUTES,TEN_MINUTES,QUARTER_HOUR,HALF_HOUR};
+
+    public static final String FATQQ = "QQ企鹅";
+    public static final String ALI = "阿狸";
+
+    public static final String[] PETSELECT = {FATQQ,ALI};
 }

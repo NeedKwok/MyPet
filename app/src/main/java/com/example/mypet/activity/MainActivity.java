@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         startService(startIntent);
 
         Toolbar toolbar = findViewById(R.id.toolbar_main);
+        toolbar.setTitle("主页");
         setSupportActionBar(toolbar);
 
         mDrawerLayout = findViewById(R.id.drawer_main);
@@ -61,17 +62,9 @@ public class MainActivity extends AppCompatActivity {
                         Intent it = new Intent(MainActivity.this, UserInfoActivity.class);
                         startActivity(it);
                         break;
-                    case R.id.pet_switch:
-                        if (Build.VERSION.SDK_INT >= 23) {
-                            if (!Settings.canDrawOverlays(getApplicationContext())) {
-                                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivityForResult(intent, REQUEST_FLOAT_WINDOW);
-                            } else {
-                                Intent it2 = new Intent(MainActivity.this, PetWindowService.class);
-                                startService(it2);
-                            }
-                        }
+                    case R.id.pet_info:
+                        Intent petIntent = new Intent(MainActivity.this,PetInfoActivity.class);
+                        startActivity(petIntent);
                         break;
                     case R.id.pet_mmListen:
                         //检查Accessibility权限

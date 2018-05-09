@@ -33,9 +33,13 @@ import com.example.mypet.R;
 import com.example.mypet.bean.ChangeInfoBean;
 import com.example.mypet.utils.InfoPrefs;
 import com.example.mypet.dialog.PhotoPopupWindow;
+import com.example.mypet.utils.PickerUtil;
+import com.example.mypet.utils.PictureUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -88,11 +92,11 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    @Override
+    /*@Override
     protected void onRestart() {
         super.onRestart();
         init();
-    }
+    }*/
 
     public void init(){
         textView_user_nick_name.setText(InfoPrefs.getData(Constants.UserInfo.NAME));
@@ -105,6 +109,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.user_head:
+                PictureUtil.mkdirMyPetRootDirectory();
                 mPhotoPopupWindow = new PhotoPopupWindow(UserInfoActivity.this, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -181,6 +186,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         boolean isSdCardExist = Environment.getExternalStorageState().equals(
                 Environment.MEDIA_MOUNTED);// 判断sdcard是否存在
         if (isSdCardExist) {
+
             String path = InfoPrefs.getData(Constants.UserInfo.HEAD_IMAGE);// 获取图片路径
 
             File file = new File(path);
@@ -188,8 +194,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 Bitmap bm = BitmapFactory.decodeFile(path);
                 // 将图片显示到ImageView中
                 circleImageView_user_head.setImageBitmap(bm);
+            }else{
+                Log.e(TAG,"no file");
+                circleImageView_user_head.setImageResource(R.drawable.huaji);
             }
         } else {
+            Log.e(TAG,"no SD card");
             circleImageView_user_head.setImageResource(R.drawable.huaji);
         }
     }
@@ -200,39 +210,75 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
 
-                // 小图切割
+                // 切割
                 case REQUEST_SMALL_IMAGE_CUTTING:
-                    if (data != null) {
-                        setPicToView(data);
-                    }
+                    Log.e(TAG,"before show");
+                    File cropFile=new File(PictureUtil.getMyPetRootDirectory(),"crop.jpg");
+                    Uri cropUri = Uri.fromFile(cropFile);
+                    setPicToView(cropUri);
                     break;
 
                 // 相册选取
                 case REQUEST_IMAGE_GET:
-                    try {
-                        startSmallPhotoZoom(data.getData());
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
+                    Uri uri= PictureUtil.getImageUri(this,data);
+                    startSmallPhotoZoom(uri);
                     break;
 
                 // 拍照
                 case REQUEST_IMAGE_CAPTURE:
-                    File temp = new File(Environment.getExternalStorageDirectory() + File.separator + IMAGE_FILE_NAME);
-                    startSmallPhotoZoom(Uri.fromFile(temp));
+                    File pictureFile = new File(PictureUtil.getMyPetRootDirectory(), IMAGE_FILE_NAME);
+                    Uri pictureUri;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        pictureUri = FileProvider.getUriForFile(this,
+                                "com.example.mypet.fileprovider", pictureFile);
+                        Log.e(TAG,"picURI="+pictureUri.toString());
+                    } else {
+                        pictureUri = Uri.fromFile(pictureFile);
+                    }
+                    startSmallPhotoZoom(pictureUri);
                     break;
-                // 获取changeinfo销毁后回传的数据
+                // 获取changeinfo销毁 后 回传的数据
                 case REQUEST_CHANGE_USER_NICK_NAME:
                     String returnData = data.getStringExtra("data_return");
                     InfoPrefs.setData(Constants.UserInfo.NAME,returnData);
+                    textView_user_nick_name.setText(InfoPrefs.getData(Constants.UserInfo.NAME));
                     break;
                 default:
             }
+        }else{
+            Log.e(TAG,"result = "+resultCode+",request = "+requestCode);
         }
     }
 
     private void startSmallPhotoZoom(Uri uri) {
+        Log.e(TAG,"START small");
+        Log.e(TAG,"Uri = "+uri.toString());
+
+        File cropFile=new File(PictureUtil.getMyPetRootDirectory(),"crop.jpg");
+        try{
+            if(cropFile.exists()){
+                cropFile.delete();
+                Log.e(TAG,"delete");
+            }
+            //cropFile.createNewFile();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        Uri cropUri;
+       // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+       //     cropUri = FileProvider.getUriForFile(this,
+          //          "com.example.mypet.fileprovider", cropFile);
+       // } else {
+            cropUri = Uri.fromFile(cropFile);
+       // }
+
         Intent intent = new Intent("com.android.camera.action.CROP");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+           // intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+           // this.grantUriPermission(this.getPackageName(),cropUri,Intent.FLAG_GRANT_WRITE_URI_PERMISSION|Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
         intent.putExtra("aspectX", 1); // 裁剪框比例
@@ -240,15 +286,17 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         intent.putExtra("outputX", 300); // 输出图片大小
         intent.putExtra("outputY", 300);
         intent.putExtra("scale", true);
-        intent.putExtra("return-data", true);
+        intent.putExtra("return-data", false);
+
+        Log.e(TAG,"cropUri = "+cropUri.toString());
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, cropUri);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        intent.putExtra("noFaceDetection", true); // no face detection
+        Log.e(TAG,"before cut");
         startActivityForResult(intent, REQUEST_SMALL_IMAGE_CUTTING);
     }
 
-    /**
-     * 大图模式切割图片
-     * 直接创建一个文件将切割后的图片写入
-     */
-   /* public void startBigPhotoZoom(Uri uri) {
+   /** public void startBigPhotoZoom(Uri uri) {
         // 创建大图文件夹
         Uri imageUri = null;
         File file;
@@ -284,7 +332,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private void imageCapture() {
         Intent intent;
         Uri pictureUri;
-        File pictureFile = new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME);
+        File pictureFile = new File(PictureUtil.getMyPetRootDirectory(), IMAGE_FILE_NAME);
         // 判断当前系统
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -297,17 +345,58 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         }
         // 去拍照
         intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
+        Log.e(TAG,"before take photo"+pictureUri.toString());
         startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
     }
 
-    public void setPicToView(Intent data) {
+    public void setPicToView(Uri uri)  {
+        if (uri != null) {
+            Bitmap photo = null;
+            try {
+                photo = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+            }catch (FileNotFoundException e){
+                e.printStackTrace();
+            }
+            // 创建 smallIcon 文件夹
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                //String storage = Environment.getExternalStorageDirectory().getPath();
+                File dirFile = new File(PictureUtil.getMyPetRootDirectory(),  "Icon");
+                if (!dirFile.exists()) {
+                    if (!dirFile.mkdirs()) {
+                        Log.d(TAG, "in setPicToView->文件夹创建失败");
+                    } else {
+                        Log.d(TAG, "in setPicToView->文件夹创建成功");
+                    }
+                }
+                File file = new File(dirFile, IMAGE_FILE_NAME);
+                InfoPrefs.setData(Constants.UserInfo.HEAD_IMAGE,file.getPath());
+                //Log.d("result",file.getPath());
+                // Log.d("result",file.getAbsolutePath());
+                // 保存图片
+                FileOutputStream outputStream = null;
+                try {
+                    outputStream = new FileOutputStream(file);
+                    photo.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            // 在视图中显示图片
+            showHeadImage();
+            //circleImageView_user_head.setImageBitmap(InfoPrefs.getData(Constants.UserInfo.GEAD_IMAGE));
+        }
+    }
+
+    /**public void setPicToView(Intent data) {
         Bundle extras = data.getExtras();
         if (extras != null) {
             Bitmap photo = extras.getParcelable("data"); // 直接获得内存中保存的 bitmap
             // 创建 smallIcon 文件夹
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                String storage = Environment.getExternalStorageDirectory().getPath();
-                File dirFile = new File(storage + "/smallIcon");
+                //String storage = Environment.getExternalStorageDirectory().getPath();
+                File dirFile = new File(PictureUtil.getMyPetRootDirectory(),  "Icon");
                 if (!dirFile.exists()) {
                     if (!dirFile.mkdirs()) {
                         Log.d(TAG, "in setPicToView->文件夹创建失败");
@@ -334,7 +423,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             showHeadImage();
             //circleImageView_user_head.setImageBitmap(InfoPrefs.getData(Constants.UserInfo.GEAD_IMAGE));
         }
-    }
+    }*/
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

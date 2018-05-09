@@ -1,9 +1,14 @@
 package com.example.mypet.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +32,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,11 +113,22 @@ public class SystemRingSelectActivity extends AppCompatActivity implements Loade
         relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent1 = new Intent(SystemRingSelectActivity.this,LocalMusicSelectActivity.class);
-                intent1.putExtra("ring_title",title);
-                intent1.putExtra("ring_uri",uri);
-                intent1.putExtra("ring_from",from);
-                startActivityForResult(intent1,REQUEST_CHANGE_ALARM_CLOCK_MUSIC);
+
+                if (ContextCompat.checkSelfPermission(SystemRingSelectActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    // 权限还没有授予，进行申请
+                    ActivityCompat.requestPermissions(SystemRingSelectActivity.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 200); // 申请的 requestCode 为 200
+                } else {
+                    // 如果权限已经申请过，直接打开选择本地音乐界面
+                    Intent intent1 = new Intent(SystemRingSelectActivity.this,LocalMusicSelectActivity.class);
+                    intent1.putExtra("ring_title",title);
+                    intent1.putExtra("ring_uri",uri);
+                    intent1.putExtra("ring_from",from);
+                    startActivityForResult(intent1,REQUEST_CHANGE_ALARM_CLOCK_MUSIC);
+
+                }
             }
         });
     }
@@ -231,7 +248,7 @@ public class SystemRingSelectActivity extends AppCompatActivity implements Loade
                     musicInfo.setMusicUri(cursor.getString(cursor
                             .getColumnIndex(MediaStore.Audio.Media.DATA)));
                     musicInfo.setDuration(RingUtil.formatDuration(duration));
-                    if(musicInfo.getMusicName().equals(title)){
+                    if(musicInfo.getMusicUri().equals(uri)){
                         musicInfo.setIsSelected(Constants.TRUE);
                         position = i;
                     }else{
@@ -276,6 +293,24 @@ public class SystemRingSelectActivity extends AppCompatActivity implements Loade
             }
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 200:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent1 = new Intent(SystemRingSelectActivity.this,LocalMusicSelectActivity.class);
+                    intent1.putExtra("ring_title",title);
+                    intent1.putExtra("ring_uri",uri);
+                    intent1.putExtra("ring_from",from);
+                    startActivityForResult(intent1,REQUEST_CHANGE_ALARM_CLOCK_MUSIC);
+                }
+                break;
+            default:
+        }
+        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
 }
 
 
