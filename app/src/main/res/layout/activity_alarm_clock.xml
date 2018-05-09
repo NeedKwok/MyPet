@@ -16,6 +16,19 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
     </android.support.v7.widget.Toolbar>
+    <TextView
+        android:id="@+id/msg_empty_TV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="请按右上角&#34;+&#34;添加闹钟"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/alarm_clock_RV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="1dp">
+    </android.support.v7.widget.RecyclerView>
 
 
 </LinearLayout>

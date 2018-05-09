@@ -27,14 +27,16 @@ import com.example.mypet.utils.PickerUtil;
 import com.example.mypet.utils.RingUtil;
 import com.example.mypet.utils.TimeCalculationUtil;
 import org.litepal.LitePal;
+import org.litepal.crud.DataSupport;
+
 import java.util.Calendar;
 
 
 import static android.media.RingtoneManager.TYPE_ALARM;
 
-public class NewAlarmClockActivity extends AppCompatActivity implements
+public class EditAlarmClockActivity extends AppCompatActivity implements
         View.OnClickListener,CompoundButton.OnCheckedChangeListener {
-    private static final String TAG = "NewAlarmClockActivity";
+    private static final String TAG = "EditAlarmClockActivity";
 
     private static final int REQUEST_CHANGE_ALARM_CLOCK_LABEL = 10;
     private static final int REQUEST_CHANGE_ALARM_CLOCK_RING = 11;
@@ -53,15 +55,18 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
     ToggleButton toggleButton_alarm_clock_repeat_saturday;
     ToggleButton toggleButton_alarm_clock_repeat_sunday;
     ToggleButton[] toggleButtons;
+
+    private int position;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_alarmclock);
+        setContentView(R.layout.activity_edit_alarm_clock);
 
         initAll();
 
-        Toolbar toolbar = findViewById(R.id.toolbar_new_alarm_clock);
+        Toolbar toolbar = findViewById(R.id.toolbar_edit_alarm_clock);
+        toolbar.setTitle("编辑闹钟");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
 
@@ -73,7 +78,9 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
 
 
     private void initAll() {
-        item = new AlarmClockItemInfo();
+        Intent intent = getIntent();
+        position = intent.getIntExtra("position",0);
+        item = DataSupport.limit(1).offset(position).find(AlarmClockItemInfo.class).get(0);
         initTimePicker();
         initRepeat();
         initLabel();
@@ -86,9 +93,8 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
         timePicker.setIs24HourView(true);
         PickerUtil.deleteDivider(timePicker);
 
-        Calendar calendar = Calendar.getInstance();
-        int curHour = calendar.get(Calendar.HOUR_OF_DAY);
-        int curMinute = calendar.get(Calendar.MINUTE);
+        int curHour = item.getHour();
+        int curMinute = item.getMinute();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             timePicker.setHour(curHour);
             timePicker.setMinute(curMinute);
@@ -122,6 +128,14 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
         toggleButtons[5]=toggleButton_alarm_clock_repeat_saturday = findViewById(R.id.saturday_tb);
         toggleButtons[6]=toggleButton_alarm_clock_repeat_sunday = findViewById(R.id.sunday_tb);
 
+        int repeat = item.getRepeat();
+        for(int i=0;i<7;i++){
+            if(repeat>0x10000000){
+                toggleButtons[i].setChecked(true);
+            }
+            repeat = repeat<<4;
+        }
+
         relativeLayout_alarm_clock_repeat.setOnClickListener(this);
         toggleButton_alarm_clock_repeat_monday.setOnCheckedChangeListener(this);
         toggleButton_alarm_clock_repeat_tuesday.setOnCheckedChangeListener(this);
@@ -130,18 +144,15 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
         toggleButton_alarm_clock_repeat_friday.setOnCheckedChangeListener(this);
         toggleButton_alarm_clock_repeat_saturday.setOnCheckedChangeListener(this);
         toggleButton_alarm_clock_repeat_sunday.setOnCheckedChangeListener(this);
-        //设置仅一次
+
         textView_alarm_clock_repeat = findViewById(R.id.alarm_clock_repeat_TV);
-        textView_alarm_clock_repeat.setText(Constants.ONLY_ONCE);
 
-        item.setRepeat(0x00000000);
-
+        changeRepeatText();
     }
 
     private void initLabel(){
         RelativeLayout relativeLayout_alarm_clock_label = findViewById(R.id.alarm_clock_label);
         textView_alarm_clock_label = findViewById(R.id.alarm_clock_label_TV);
-        item.setLabel(Constants.DEFAULT_LABEL);
         refreshLabel();
         relativeLayout_alarm_clock_label.setOnClickListener(this);
     }
@@ -157,7 +168,6 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
     private void initRemind(){
         RelativeLayout relativeLayout_alarm_clock_remind = findViewById(R.id.alarm_clock_remind);
         textView_alarm_clock_remind = findViewById(R.id.alarm_clock_remind_TV);
-        item.setRemind(Constants.CODE_RING);
         refreshRemind();
         relativeLayout_alarm_clock_remind.setOnClickListener(this);
     }
@@ -185,11 +195,6 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
         }*/
         RelativeLayout relativeLayout_alarm_clock_music = findViewById(R.id.alarm_clock_music);
         textView_alarm_clock_music = findViewById(R.id.alarm_clock_music_TV);
-        String uri = RingtoneManager.getActualDefaultRingtoneUri(this, TYPE_ALARM).toString();
-        String title = RingtoneManager.getRingtone(this, Uri.parse(uri)).getTitle(this);
-        item.setMusicName(title);
-        item.setMusicFrom(0);
-        item.setMusicUri(uri);
         refreshMusic();
         relativeLayout_alarm_clock_music.setOnClickListener(this);
 
@@ -203,7 +208,6 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
     private void initSnooze() {
         RelativeLayout relativeLayout_alarm_clock_snooze = findViewById(R.id.alarm_clock_snooze);
         textView_alarm_clock_snooze = findViewById(R.id.alarm_clock_snooze_TV);
-        item.setSnooze(Constants.CODE_NO_SNOOZE);
         refreshSnooze();
         relativeLayout_alarm_clock_snooze.setOnClickListener(this);
     }
@@ -251,7 +255,7 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
             case R.id.confirm:
                 item.save();
                 String nextClock = timeCalculation();
-                Toast.makeText(NewAlarmClockActivity.this,nextClock,Toast.LENGTH_LONG).show();
+                Toast.makeText(EditAlarmClockActivity.this,nextClock,Toast.LENGTH_LONG).show();
                 setResult(RESULT_OK);
                 finish();
                 break;
@@ -295,7 +299,7 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.alarm_clock_repeat:
-                new ItemsAlertDialogUtil(NewAlarmClockActivity.this,"快捷选择").setItems(Constants.DAY_ITEMS)
+                new ItemsAlertDialogUtil(EditAlarmClockActivity.this,"快捷选择").setItems(Constants.DAY_ITEMS)
                         .setListener(new ItemsAlertDialogUtil.OnSelectFinishedListener() {
                             @Override
                             public void SelectFinished(int which) {
@@ -321,13 +325,13 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
                 ChangeInfoBean bean = new ChangeInfoBean();
                 bean.setTitle("修改标签");
                 bean.setInfo(item.getLabel());
-                Intent intent = new Intent(NewAlarmClockActivity.this,ChangeInfoActivity.class);
+                Intent intent = new Intent(EditAlarmClockActivity.this,ChangeInfoActivity.class);
                 intent.putExtra("data",bean);
                 startActivityForResult(intent,REQUEST_CHANGE_ALARM_CLOCK_LABEL);
                 break;
 
             case R.id.alarm_clock_remind:
-                new ItemsAlertDialogUtil(NewAlarmClockActivity.this).setItems(Constants.REMINDING)
+                new ItemsAlertDialogUtil(EditAlarmClockActivity.this).setItems(Constants.REMINDING)
                         .setListener(new ItemsAlertDialogUtil.OnSelectFinishedListener() {
                             @Override
                             public void SelectFinished(int which) {
@@ -341,7 +345,7 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
                 String title = item.getMusicName();
                 String uri = item.getMusicUri();
                 int from = item.getMusicFrom();
-                Intent intent1 = new Intent(NewAlarmClockActivity.this,SystemRingSelectActivity.class);
+                Intent intent1 = new Intent(EditAlarmClockActivity.this,SystemRingSelectActivity.class);
                 intent1.putExtra("ring_title",title);
                 intent1.putExtra("ring_uri",uri);
                 intent1.putExtra("ring_from",from);
@@ -349,7 +353,7 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
                 break;
 
             case R.id.alarm_clock_snooze:
-                new ItemsAlertDialogUtil(NewAlarmClockActivity.this,"小睡间隔").setItems(Constants.SNOOZE)
+                new ItemsAlertDialogUtil(EditAlarmClockActivity.this,"小睡间隔").setItems(Constants.SNOOZE)
                         .setListener(new ItemsAlertDialogUtil.OnSelectFinishedListener() {
                             @Override
                             public void SelectFinished(int which) {
@@ -375,7 +379,7 @@ public class NewAlarmClockActivity extends AppCompatActivity implements
                                     case 6:
                                         item.setSnooze(Constants.CODE_HALF_HOUR);
                                         break;
-                                   default:
+                                    default:
                                 }
                                 refreshSnooze();
                             }

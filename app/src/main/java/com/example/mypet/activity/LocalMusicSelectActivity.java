@@ -130,7 +130,7 @@ public class LocalMusicSelectActivity extends AppCompatActivity implements Loade
         MusicAdapter adapter = new MusicAdapter(localMusicList,recyclerView);
         adapter.setOnItemClickListener(new MusicAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View selectedView, int position) {
+            public void onItemClick(int position) {
                 AudioPlayer.getInstance(MyPetApplication.getContext())
                         .play(localMusicList.get(position).getMusicUri(),false,false);
                 title = localMusicList.get(position).getMusicName();

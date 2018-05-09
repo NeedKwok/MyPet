@@ -9,6 +9,13 @@ public class FormatUtil {
     }
 
     public static String addTimeSeparator(int hour,int minute){
+        String zero = "0";
+        if(hour < 10&&minute < 10)
+            return  zero+hour+":"+zero+minute;
+        if(hour < 10)
+            return  zero+hour+":"+minute;
+        if(minute < 10)
+            return  hour+":"+zero+minute;
         return hour+":"+minute;
     }
 

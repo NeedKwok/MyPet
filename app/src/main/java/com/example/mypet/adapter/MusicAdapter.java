@@ -31,7 +31,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
 
     //define interface
     public static interface OnItemClickListener {
-        void onItemClick(/*View prevSelectedView,*/ View selectedView , int position);
+        void onItemClick(int position);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -87,7 +87,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     public void onClick(View v) {
         int position = (int)v.getTag();
         if(mOnItemClickListener != null){
-            mOnItemClickListener.onItemClick(v,position);
+            mOnItemClickListener.onItemClick(position);
             //当前选择与之前选择不同才执行
             if(position != prevSelectedMusic){
                 if(prevSelectedMusic >= 0){

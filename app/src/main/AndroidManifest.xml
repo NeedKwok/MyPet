@@ -12,9 +12,10 @@
     <!-- 蓝牙权限 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <!--悬浮窗-->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <!-- 悬浮窗 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.GET_TASKS" />
+
     <application
         android:name=".utils.MyPetApplication"
         android:allowBackup="true"
@@ -47,30 +48,30 @@
         <activity android:name=".activity.NewAlarmClockActivity" />
         <activity android:name=".activity.SystemRingSelectActivity" />
         <activity android:name=".activity.LocalMusicSelectActivity" />
-        <activity android:name=".activity.AlarmClockActivity"/>
-        <activity android:name=".activity.BlueToothInfoActivity"/>
+        <activity android:name=".activity.AlarmClockActivity" />
+        <activity android:name=".activity.BlueToothInfoActivity" />
+
         <service
             android:name=".service.WeChatListenerService"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService"/>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accessibilityservice"
-                android:resource="@xml/accessibility"/>
+                android:resource="@xml/accessibility" />
         </service>
-        <!--悬浮窗服务注册-->
-        <service
-            android:name=".service.PetWindowService">
-        </service>
+        <!-- 悬浮窗服务注册 -->
+        <service android:name=".service.PetWindowService"></service>
         <service
             android:name=".service.ClockService"
             android:enabled="true"
             android:exported="true" />
 
-
+        <activity android:name=".activity.EditAlarmClockActivity"></activity>
     </application>
 
 </manifest>

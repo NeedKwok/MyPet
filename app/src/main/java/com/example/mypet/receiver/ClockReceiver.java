@@ -23,6 +23,7 @@ public class ClockReceiver extends BroadcastReceiver {
         mContext = context;
         long curTime = System.currentTimeMillis();
         List<AlarmClockItemInfo> alarmClockItemInfoList= DataSupport.findAll(AlarmClockItemInfo.class);
+
         if(alarmClockItemInfoList == null || alarmClockItemInfoList.size() < 1){
             Log.d(TAG,"闹钟为空");
         }else{

@@ -3,6 +3,7 @@ package com.example.mypet.bean;
 import org.litepal.crud.DataSupport;
 
 public class AlarmClockItemInfo extends DataSupport{
+   // private long uid;
     //时
     private int hour;
     //分
@@ -26,7 +27,12 @@ public class AlarmClockItemInfo extends DataSupport{
 
     public AlarmClockItemInfo() {
         isEnable = 1;
+       // uid = System.currentTimeMillis();
     }
+
+//    public long getUid() {
+//        return uid;
+//    }
 
     public String getMusicUri() {
         return musicUri;

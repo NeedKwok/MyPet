@@ -19,14 +19,15 @@ import java.util.List;
 import static com.example.mypet.utils.Constants.FALSE;
 import static com.example.mypet.utils.Constants.TRUE;
 
-public class AlarmClockAdapter extends RecyclerView.Adapter<AlarmClockAdapter.ViewHolder> implements View.OnClickListener{
+public class AlarmClockAdapter extends RecyclerView.Adapter<AlarmClockAdapter.ViewHolder> implements View.OnClickListener,View.OnLongClickListener{
     private static final String TAG = "AlarmClockAdapter";
     private List<AlarmClockItemInfo> mAlarmList;
     private AlarmClockAdapter.OnItemClickListener mOnItemClickListener = null;
 
     //define interface
-    public static interface OnItemClickListener {
-        void onItemClick(/*View prevSelectedView,*/ View selectedView , int position);
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+        void onItemLongClick(int position);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -59,25 +60,41 @@ public class AlarmClockAdapter extends RecyclerView.Adapter<AlarmClockAdapter.Vi
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.alarm_clock_item, parent,false);
         final AlarmClockAdapter.ViewHolder holder = new AlarmClockAdapter.ViewHolder(view);
         holder.alarmClockItemView.setOnClickListener(this);
+        holder.alarmClockItemView.setOnLongClickListener(this);
         holder.switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 int position = holder.getAdapterPosition();
-
+                if(isChecked){
+                    mAlarmList.get(position).setIsEnable(TRUE);
+                    mAlarmList.get(position).save();
+                }else{
+                    mAlarmList.get(position).setIsEnable(FALSE);
+                    mAlarmList.get(position).save();
+                }
             }
         });
         return holder;
     }
 
-    /**
-     *  还要补充
-     * @param v
-     */
+    @Override
+    public boolean onLongClick(View v) {
+        int position = (int)v.getTag();
+        //long uid = mAlarmList.get(position).getUid();
+        if(mOnItemClickListener != null){
+            mOnItemClickListener.onItemLongClick(position);
+        }else{
+            Log.e(TAG,"you forgot add listener!");
+        }
+        return true;
+    }
+
     @Override
     public void onClick(View v) {
         int position = (int)v.getTag();
+        //long uid = mAlarmList.get(position).getUid();
         if(mOnItemClickListener != null){
-            mOnItemClickListener.onItemClick(v,position);
+            mOnItemClickListener.onItemClick(position);
         }else{
             Log.e(TAG,"you forgot add listener!");
         }

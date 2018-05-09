@@ -190,7 +190,7 @@ public class SystemRingSelectActivity extends AppCompatActivity implements Loade
          adapter = new MusicAdapter(systemRingList,recyclerView);
         adapter.setOnItemClickListener(new MusicAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View selectedView, int position) {
+            public void onItemClick(int position) {
                 if(selectedLocalMusicRelativeLayout.hasOnClickListeners()&&getPosition()<0){
                     selectedLocalMusicRelativeLayout.findViewById(R.id.selected_local_music_icon)
                             .setVisibility(View.GONE);

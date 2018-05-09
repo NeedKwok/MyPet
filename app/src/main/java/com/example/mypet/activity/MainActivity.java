@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Toast;
 
+import com.example.mypet.service.ClockService;
 import com.example.mypet.service.PetWindowService;
 import com.example.mypet.service.WeChatListenerService;
 import com.example.mypet.R;
@@ -36,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent startIntent = new Intent(this, ClockService.class);
+        startService(startIntent);
+
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
@@ -117,11 +121,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+//        return super.onCreateOptionsMenu(menu);
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -129,14 +133,10 @@ public class MainActivity extends AppCompatActivity {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
-            case R.id.item1:
-                Intent it = new Intent(MainActivity.this, NewAlarmClockActivity.class);
-                startActivity(it);
-                break;
             default:
         }
         return super.onOptionsItemSelected(item);
-    }*/
+    }
 
     //Accessibility权限检查
     private boolean checkAccessibilityPermission() {
