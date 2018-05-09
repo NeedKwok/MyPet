@@ -75,7 +75,7 @@ public class MsgWindowView extends RelativeLayout {
             case MotionEvent.ACTION_UP:
                 //单击时关闭PetMessageWindow
                 if(xInScreen==xDownInScreen&&yInScreen==yDownInScreen){
-                    //TODO do what you need to do
+                    MyWindowManager.removeMsgWindow(context);
                 }
                 break;
             default:
@@ -105,6 +105,8 @@ public class MsgWindowView extends RelativeLayout {
         textBuffer=msg;
         hasBuffer=true;
     }
+
+
 
     //设置消息气泡的方向
     public void setBackground(int resId){

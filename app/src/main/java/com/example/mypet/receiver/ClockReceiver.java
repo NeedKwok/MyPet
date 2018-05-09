@@ -14,6 +14,8 @@ import org.litepal.crud.DataSupport;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.mypet.utils.Constants.FALSE;
+
 
 public class ClockReceiver extends BroadcastReceiver {
     private static final String TAG = "ClockReceiver";
@@ -38,9 +40,18 @@ public class ClockReceiver extends BroadcastReceiver {
                 Log.d(TAG,"nextClock:"+new Date(nextClock).toString());
                 //可能存在±1S的误差
                 if(nextClock - curTime >= -1000&&nextClock - curTime <= 1000){
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//
+//                        }
+//                    }).start();
                     startClock(itemInfo.getRemind(), itemInfo.getMusicUri());
 
-                    new ClockThread().run();
+                    new ClockThread().start();
+                    if(itemInfo.getRepeat() == 0x0){
+                        itemInfo.setIsEnable(FALSE);
+                    }
                     /*new Thread() {
                         @Override
                         public void run() {

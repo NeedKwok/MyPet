@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class BlueToothInfoActivity extends AppCompatActivity {
-        private static final String TAG = "BlueToothInfoActivity";
+    private static final String TAG = "BlueToothInfoActivity";
     private RelativeLayout name_show;
     private RelativeLayout number_show;
     private RelativeLayout blt_selectinfo;
@@ -74,8 +74,6 @@ public class BlueToothInfoActivity extends AppCompatActivity {
         bltAdapter = BluetoothAdapter.getDefaultAdapter();
         //注册蓝牙改变状态广播
         registerReceiver(bluetoothState,new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-        //注册设备扫描到的广播
-        //registerReceiver(deviceFound,new IntentFilter(BluetoothDevice.ACTION_FOUND));
         if (bltAdapter==null){
             Toast.makeText(this, "手机不支持蓝牙", Toast.LENGTH_SHORT).show();
             finish();
@@ -92,14 +90,7 @@ public class BlueToothInfoActivity extends AppCompatActivity {
             //跳转至手机蓝牙设置界面用户自行绑定
             Intent intent_blt = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
             startActivity(intent_blt);
-            //getBoundDeviceInfo();
         }
-//        IntentFilter intent = new IntentFilter();
-//        intent.addAction(BluetoothDevice.ACTION_FOUND);//设备扫描到的广播
-//        intent.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);//蓝牙状态改变
-//        intent.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);//行动扫描模式改变了
-//        intent.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);//动作状态发生了变化
-//        registerReceiver(searchDevices, intent);
 
     }
 
@@ -110,13 +101,11 @@ public class BlueToothInfoActivity extends AppCompatActivity {
                 case R.id.as_server:
                     //开启服务器
                     startServer();
-                    Toast.makeText(BlueToothInfoActivity.this, "选择了server", Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.as_client:
                     //开启客户端
                     startServer();
                     startClient();
-                    Toast.makeText(BlueToothInfoActivity.this, "选择了client", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -125,6 +114,7 @@ public class BlueToothInfoActivity extends AppCompatActivity {
     private Handler handler =  new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
+            //执行消息放入文本框
             output.append(msg.getData().getString("msg"));
             return true;
         }
@@ -132,7 +122,6 @@ public class BlueToothInfoActivity extends AppCompatActivity {
     });
 
     public void mkmsg(String str) {
-        //handler junk, because thread can't update screen!
         Message msg = new Message();
         Bundle b = new Bundle();
         b.putString("msg", str);
@@ -149,8 +138,6 @@ public class BlueToothInfoActivity extends AppCompatActivity {
 
     //服务器端
     public void startServer() {
-        BluetoothSocket socket;
-
         new Thread(new AcceptThread()).start();
 
     }
@@ -158,77 +145,61 @@ public class BlueToothInfoActivity extends AppCompatActivity {
     private class ConnectThread extends Thread {
         private BluetoothSocket socket;
         private final BluetoothDevice mmDevice;
-
         public ConnectThread(BluetoothDevice device) {
             mmDevice = device;
             BluetoothSocket tmp = null;
-
-            // Get a BluetoothSocket for a connection with the
-            // given BluetoothDevice
+            //尝试获取套接字
             try {
                 tmp = device.createRfcommSocketToServiceRecord(BlueToothInfoActivity.MY_UUID);
             } catch (IOException e) {
-                mkmsg("Client connection failed: "+e.getMessage()+"\n");
+                mkmsg("获取套接字失败，错误信息： "+e.getMessage()+"\n");
             }
             socket = tmp;
-
         }
-
         public void run() {
-            mkmsg("Client running\n");
-            // Always cancel discovery because it will slow down a connection
             bltAdapter.cancelDiscovery();
-
-            // Make a connection to the BluetoothSocket
             try {
-                // This is a blocking call and will only return on a
-                // successful connection or an exception
                 socket.connect();
             } catch (IOException e) {
-                mkmsg("Connect failed\n");
+                mkmsg("连接失败...\n");
                 try {
                     socket.close();
                     socket = null;
                 } catch (IOException e2) {
-                    mkmsg("unable to close() socket during connection failure: "+e2.getMessage()+"\n");
+                    mkmsg("关闭套接字失败，错误信息： "+e2.getMessage()+"\n");
                     socket = null;
                 }
                 // Start the service over to restart listening mode
             }
             // If a connection was accepted
             if (socket != null) {
-                mkmsg("Connection made\n");
-                mkmsg("Remote device address: "+socket.getRemoteDevice().getAddress()+"\n");
+                mkmsg("对方蓝牙设备地址: "+socket.getRemoteDevice().getAddress()+"\n");
                 //Note this is copied from the TCPdemo code.
                 try {
                     PrintWriter out = new PrintWriter( new BufferedWriter( new OutputStreamWriter(socket.getOutputStream())),true);
-                    mkmsg("Attempting to send message ...\n");
-                    out.println("hello from Bluetooth Demo Client");
+                    mkmsg("尝试发送消息 ...\n");
+                    out.println("hello from Bluetooth Client");
                     out.flush();
-                    mkmsg("Message sent...\n");
+                    mkmsg("消息已发送...\n");
 
-                    mkmsg("Attempting to receive a message ...\n");
+                    mkmsg("尝试接收消息 ...\n");
                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String str = in.readLine();
-                    mkmsg("received a message:\n" + str+"\n");
-
-
-
-                    mkmsg("We are done, closing connection\n");
+                    mkmsg("接受到的消息:\n" + str+"\n");
+                    mkmsg("连接结束，准备关闭套接字\n");
                 } catch(Exception e) {
-                    mkmsg("Error happened sending/receiving\n");
-
+                    mkmsg("发送接收出现错误\n");
                 } finally {
                     try {
                         socket.close();
                     } catch (IOException e) {
-                        mkmsg("Unable to close socket"+e.getMessage()+"\n");
+                        mkmsg("关闭套接字失败，错误信息： "+e.getMessage()+"\n");
                     }
                 }
             } else {
-                mkmsg("Made connection, but socket is null\n");
+                mkmsg("以建立连接，但套接字为null\n");
             }
-            mkmsg("Client ending \n");
+            mkmsg("客户端结束\n");
 
         }
 
@@ -236,7 +207,7 @@ public class BlueToothInfoActivity extends AppCompatActivity {
             try {
                 socket.close();
             } catch (IOException e) {
-                mkmsg( "close() of connect socket failed: "+e.getMessage() +"\n");
+                mkmsg( "关闭套接字连接失败： "+e.getMessage() +"\n");
             }
         }
     }
@@ -244,61 +215,60 @@ public class BlueToothInfoActivity extends AppCompatActivity {
     private class AcceptThread extends Thread {
         // The local server socket
         private final BluetoothServerSocket mmServerSocket;
-
         public AcceptThread() {
             BluetoothServerSocket tmp = null;
             // Create a new listening server socket
             try {
                 tmp = bltAdapter.listenUsingRfcommWithServiceRecord(BlueToothInfoActivity.NAME, BlueToothInfoActivity.MY_UUID);
             } catch (IOException e) {
-                mkmsg("Failed to start server\n");
+                mkmsg("启动服务器失败\n");
             }
             mmServerSocket = tmp;
         }
 
         public void run() {
-            mkmsg("waiting on accept");
+            mkmsg("等待连接");
             BluetoothSocket socket = null;
             try {
-                // This is a blocking call and will only return on a
-                // successful connection or an exception
                 socket = mmServerSocket.accept();
             } catch (IOException e) {
-                mkmsg("Failed to accept\n");
+                mkmsg("接受请求失败\n");
             }
 
             // If a connection was accepted
             if (socket != null) {
-                mkmsg("Connection made\n");
-                mkmsg("Remote device address: " + socket.getRemoteDevice().getAddress() + "\n");
-                //Note this is copied from the TCPdemo code.
-                try {
-                    mkmsg("Attempting to receive a message ...\n");
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    String str = in.readLine();
-                    mkmsg("received a message:\n" + str + "\n");
+                manageSocket(socket);
+                closeSocket(socket);
+//                mkmsg("对方蓝牙设备地址： " + socket.getRemoteDevice().getAddress() + "\n");
+//                //Note this is copied from the TCPdemo code.
+//                try {
+//                    mkmsg("尝试接受消息\n");
+//                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//                    String str = in.readLine();
+//                    mkmsg("接收到的信息: " + str + "\n");
+//
+//                    PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+//                    mkmsg("尝试发送信息\n");
+//                    out.println("Hi from Bluetooth Server");
+//                    out.flush();
+//                    mkmsg("消息已发送...\n");
+//
+//                    mkmsg("准备关闭套接字\n");
+//                } catch (Exception e) {
+//                    mkmsg("发送或接收信息出现问题\n");
+//
+//                } finally {
+//                    try {
+////                        socket.close();
+////                    } catch (IOException e) {
+////                        mkmsg("无法关闭套接字： " + e.getMessage() + "\n");
+////                    }
+//                }
 
-                    PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-                    mkmsg("Attempting to send message ...\n");
-                    out.println("Hi from Bluetooth Demo Server");
-                    out.flush();
-                    mkmsg("Message sent...\n");
-
-                    mkmsg("We are done, closing connection\n");
-                } catch (Exception e) {
-                    mkmsg("Error happened sending/receiving\n");
-
-                } finally {
-                    try {
-                        socket.close();
-                    } catch (IOException e) {
-                        mkmsg("Unable to close socket" + e.getMessage() + "\n");
-                    }
-                }
             } else {
-                mkmsg("Made connection, but socket is null\n");
+                mkmsg("连接已建立，但套接字为null\n");
             }
-            mkmsg("Server ending \n");
+            mkmsg("服务器端结束\n");
         }
 
         public void cancel() {
@@ -319,7 +289,7 @@ public class BlueToothInfoActivity extends AppCompatActivity {
         device_name.setText(deviceName);
     }
 
-    //获取已绑定设备列表
+    //获取已绑定设备列表,alertDialog显示
     private void getBoundDeviceInfo(){
         Set<BluetoothDevice> boundDevices = bltAdapter.getBondedDevices();
         if (boundDevices.size()>0){
@@ -332,14 +302,16 @@ public class BlueToothInfoActivity extends AppCompatActivity {
                 i++;
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Choose Bluetooth:");
+            builder.setTitle("请选择蓝牙设备:");
             builder.setCancelable(false);
             builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int item) {
                     dialog.dismiss();
                     if (item >= 0 && item <blueDev.length) {
                         device = blueDev[item];//当前选择的蓝牙设备
+                        //设置设备信息
                         s_deviceInfo.setText(blueDev[item].getName()+"-->"+blueDev[item].getAddress());
+
                     }
 
                 }
@@ -352,7 +324,7 @@ public class BlueToothInfoActivity extends AppCompatActivity {
     }
 
 
-//回调函数
+    //回调函数
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode==REQUEST_ENABLE_BT){
@@ -380,7 +352,7 @@ public class BlueToothInfoActivity extends AppCompatActivity {
                 //打开中
                 case BluetoothAdapter.STATE_TURNING_ON:
                     break;
-                    //打开
+                //打开
                 case BluetoothAdapter.STATE_ON:
                     unregisterReceiver(bluetoothState);
                     //获取本机设备信息
@@ -389,13 +361,6 @@ public class BlueToothInfoActivity extends AppCompatActivity {
                     //跳转至手机蓝牙设置界面用户自行绑定
                     Intent intent_blt = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
                     startActivity(intent_blt);
-                    //getBoundDeviceInfo();
-                    //设置设备可见性
-//                    Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-//                    discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-//                    startActivity(discoverableIntent);
-                    //开始扫描
-                    //bltAdapter.startDiscovery();
                     break;
                 case BluetoothAdapter.STATE_TURNING_OFF:
                     break;
@@ -406,25 +371,21 @@ public class BlueToothInfoActivity extends AppCompatActivity {
         }
     };
 
-    //创建蓝牙发现设备的广播接收器
-//    private final BroadcastReceiver deviceFound= new BroadcastReceiver(){
-////        @Override
-////        public void onReceive(Context context, Intent intent) {
-////            String action = intent.getAction();
-////            // When discovery finds a device
-////            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-////                // Get the 获得intent中的device对象
-////                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-////                // 打印发现设备的名称和设备号
-////                Log.e("Found device","DeviceInfo: "+device.getName()+"-->"+device.getAddress());
-////            }
-////        }
-////    };
+    //管理得到的socket
+    private void manageSocket(BluetoothSocket socket){
 
+    }
 
+    //关闭套接字
+    private void closeSocket(BluetoothSocket socket){
+        try {
+            socket.close();
+        } catch (IOException e) {
+            mkmsg("无法关闭套接字： " + e.getMessage() + "\n");
+        }
+    }
 
-
-//  从系统设置界面返回后获取所有绑定的设备信息
+    //  从系统设置界面返回后获取所有绑定的设备信息
     @Override
     protected void onRestart() {
         getBoundDeviceInfo();
@@ -437,8 +398,6 @@ public class BlueToothInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        //销毁时注销发现设备广播
-        //unregisterReceiver(deviceFound);
         super.onDestroy();
     }
 }

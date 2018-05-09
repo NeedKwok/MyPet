@@ -1,5 +1,7 @@
 package com.example.mypet.utils;
 
+import com.example.mypet.R;
+
 public final class Constants {
     public static final int TRUE = 1;
     public static final int FALSE = 0;
@@ -67,4 +69,9 @@ public final class Constants {
     public static final String ALI = "阿狸";
 
     public static final String[] PETSELECT = {FATQQ,ALI};
+
+    public static final int[][] resId={
+            {R.drawable.qqgg_1,R.drawable.qqgg_2,R.drawable.qqgg_3,R.drawable.qqgg_4},
+            {R.drawable.ali_1,R.drawable.ali_2,R.drawable.ali_3,R.drawable.ali_4}
+    };
 }

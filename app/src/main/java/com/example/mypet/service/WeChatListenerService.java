@@ -14,8 +14,6 @@ import java.util.List;
 public class WeChatListenerService extends AccessibilityService {
     private static final String TAG = "WeChatListenerService";
     public static boolean isRunning = false;//是否运行
-    //微信包名
-    //private String mmPge = "com.tencent.mm";
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -26,11 +24,8 @@ public class WeChatListenerService extends AccessibilityService {
             int eventType = event.getEventType();
             switch (eventType) {
                 case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
-                    //判断事件的触发包名是不是微信，此处由于AndroidManifest.xml中写明了监听的com.tencent.mm，故不用
-                    //if (event.getPackageName()==mmPge){
-                        Log.e("检测到微信消息","转入消息处理");
-                        handleNotification(event);
-                    //}
+                    Log.e(TAG,"转入消息处理");
+                    handleNotification(event);
             }
         }
     }

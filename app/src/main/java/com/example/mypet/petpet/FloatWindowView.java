@@ -34,6 +34,8 @@ public class FloatWindowView extends LinearLayout {
     private WindowManager windowManager;
     //悬浮窗的参数
     public WindowManager.LayoutParams mParams;
+    //悬浮窗动图
+    private GifImageView testView;
     //记录当前手指位置在屏幕上的横坐标值
     private float xInScreen;
     //记录当前手指位置在屏幕上的纵坐标值
@@ -64,23 +66,24 @@ public class FloatWindowView extends LinearLayout {
      */
     public static int mViewHeight;
 
+    private Context mContext;
 
     public FloatWindowView(Context context){
         super(context);
+        mContext=context;
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         LayoutInflater.from(context).inflate(R.layout.float_window, this);
         View view = findViewById(R.id.float_window_layout);
         View baseView=view.findViewById(R.id.float_window_layout);
         viewWidth = view.getLayoutParams().width;
         viewHeight = view.getLayoutParams().height;
-        GifImageView testView = findViewById(R.id.test);
-        testView.setImageResource(R.drawable.xxpet);
+        testView = findViewById(R.id.test);
         int[] size=getScreenSize(context);
         screenHeight=size[1];
         screenWidth=size[0];
         Log.e("屏幕的size","宽度："+screenWidth+"高度："+screenHeight);
-        mViewHeight = baseView.getLayoutParams().width;
-        mVieWidth = baseView.getLayoutParams().height;
+        mVieWidth = baseView.getLayoutParams().width;
+        mViewHeight = baseView.getLayoutParams().height;
         Log.e("View size","宽度："+mVieWidth+"高度："+mViewHeight);
     }
     @Override
@@ -94,6 +97,9 @@ public class FloatWindowView extends LinearLayout {
                 yDownInScreen = event.getRawY() - getStatusBarHeight();
                 xInScreen = event.getRawX();
                 yInScreen = event.getRawY() - getStatusBarHeight();
+                if(MyWindowManager.isMsgShowing()){
+                    MyWindowManager.removeMsgWindow(mContext);
+                }
                 break;
             // 手指移动的时候更新小悬浮窗的位置
             case MotionEvent.ACTION_MOVE:
@@ -104,7 +110,9 @@ public class FloatWindowView extends LinearLayout {
             // 如果手指离开时xDownInScreen和xInScreen相等，且yDownInScreen和yInScreen相等，则视为触发了单击事件。
             case MotionEvent.ACTION_UP:
                 if (xDownInScreen == xInScreen && yDownInScreen == yInScreen) {
-                    //点击事件
+                    if(MyWindowManager.isMsgShowing()){
+                        MyWindowManager.removeMsgWindow(mContext);
+                    }
                 }
                 //判断位于界面的位置
                 toTheSide();
@@ -147,17 +155,15 @@ public class FloatWindowView extends LinearLayout {
 
     private void toTheSide(){
         if(xInScreen<screenWidth/2){
-            //mParams.x=0;
             side=FloatWindowView.LEFT;
-            Log.e("FloatWindowView","Side: left");
+            mParams.x=0;
         }
         else {
-            //mParams.x=screenWidth;
+            mParams.x=screenWidth;
             side=FloatWindowView.RIGHT;
-            Log.e("FloatWindowView","Side: right");
         }
 
-        //windowManager.updateViewLayout(this,mParams);
+        windowManager.updateViewLayout(this,mParams);
     }
 
     public static int[] getScreenSize(Context context){
@@ -166,6 +172,10 @@ public class FloatWindowView extends LinearLayout {
         size[0]=windowManager.getDefaultDisplay().getWidth();
         size[1]=windowManager.getDefaultDisplay().getHeight();
         return size;
+    }
+
+    public void setGifView(int resId){
+        testView.setImageResource(resId);
     }
 
 }
