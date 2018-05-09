@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.mypet">
+    package="com.example.mypet"
+    android:installLocation="internalOnly">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- 相机权限，sdcard读、写、访问相机、震动、闪光灯 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -65,13 +67,24 @@
                 android:resource="@xml/accessibility" />
         </service>
         <!-- 悬浮窗服务注册 -->
-        <service android:name=".service.PetWindowService"></service>
+        <service android:name=".service.PetWindowService" />
         <service
             android:name=".service.ClockService"
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".activity.EditAlarmClockActivity"></activity>
+        <activity android:name=".activity.EditAlarmClockActivity" />
+
+        <receiver
+            android:name=".activity.BootCompleteReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".activity.PetInfoActivity"></activity>
     </application>
 
 </manifest>
