@@ -13,8 +13,11 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -53,6 +56,19 @@ public class BlueToothInfoActivity extends AppCompatActivity {
     //选择的device
     BluetoothDevice device;
     private int REQUEST_ENABLE_BT=1;
+
+    private void initToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar_blt);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+
+        if(actionBar != null ){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            //actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +76,8 @@ public class BlueToothInfoActivity extends AppCompatActivity {
         InfoPrefs.init("pet_info");
         name=InfoPrefs.getData("pet_name");
         setContentView(R.layout.activity_bltinfo);
+
+        initToolbar();
         name_show =findViewById(R.id.blt_name);
         number_show=findViewById(R.id.blt_num);
         blt_selectinfo=findViewById(R.id.blt_select);
@@ -397,5 +415,15 @@ public class BlueToothInfoActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

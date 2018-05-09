@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="180dp"
+    android:layout_height="150dp"
     android:padding="10dp"
     android:background="?attr/colorPrimary">
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/icon_image"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+
+        android:layout_centerInParent="true"/>
+
+    <!--<TextView-->
+        <!--android:id="@+id/mail"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:text="tonygreed@gmail.com"-->
+        <!--android:textColor="#FFF"-->
+        <!--android:textSize="14sp"/>-->
+
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/username"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="head"/>
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:textSize="14sp"
+        android:textColor="#FFF"/>
 
 </RelativeLayout>

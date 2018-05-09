@@ -2,6 +2,8 @@ package com.example.mypet.activity;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.provider.AlarmClock;
 import android.provider.Settings;
@@ -13,17 +15,25 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.accessibility.AccessibilityManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mypet.service.ClockService;
 import com.example.mypet.service.PetWindowService;
 import com.example.mypet.service.WeChatListenerService;
 import com.example.mypet.R;
+import com.example.mypet.utils.Constants;
+import com.example.mypet.utils.InfoPrefs;
 
+import java.io.File;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -32,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean accessibilityIsOpen = false;
     private final int REQUEST_ACCESSIBILITY = 1;
     private final int REQUEST_FLOAT_WINDOW = 10;
+
+    private CircleImageView circleImageView;
+    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerLayout = findViewById(R.id.drawer_main);
         NavigationView navigationView = findViewById(R.id.navigation_main);
+        View headView = navigationView.getHeaderView(0);
+        circleImageView = headView.findViewById(R.id.icon_image);
+        textView = headView.findViewById(R.id.username);
+        refreshHeadView();
         ActionBar actionBar = getSupportActionBar();
 
         if (actionBar != null) {
@@ -95,6 +112,28 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        refreshHeadView();
+    }
+
+    private void refreshHeadView() {
+        InfoPrefs.init("user_info");
+        String path = InfoPrefs.getData(Constants.UserInfo.HEAD_IMAGE);// 获取图片路径
+
+        File file = new File(path);
+        if (file.exists()) {
+            Bitmap bm = BitmapFactory.decodeFile(path);
+            // 将图片显示到ImageView中
+            circleImageView.setImageBitmap(bm);
+        }else{
+            Log.e(TAG,"no file");
+            circleImageView.setImageResource(R.drawable.huaji);
+        }
+        textView.setText(InfoPrefs.getData("user_nick_name"));
     }
 
     private long firstTime = 0;
