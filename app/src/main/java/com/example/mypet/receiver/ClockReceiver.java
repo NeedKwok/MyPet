@@ -3,10 +3,16 @@ package com.example.mypet.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.example.mypet.bean.AlarmClockItemInfo;
+import com.example.mypet.petpet.MyWindowManager;
+import com.example.mypet.service.MsgWindowService;
+import com.example.mypet.service.PetWindowService;
 import com.example.mypet.utils.AudioPlayer;
+import com.example.mypet.utils.InfoPrefs;
 import com.example.mypet.utils.TimeCalculationUtil;
 
 import org.litepal.crud.DataSupport;
@@ -20,6 +26,7 @@ import static com.example.mypet.utils.Constants.FALSE;
 public class ClockReceiver extends BroadcastReceiver {
     private static final String TAG = "ClockReceiver";
     private Context mContext;
+    private static String label;
     @Override
     public void onReceive(final Context context, Intent intent) {
         mContext = context;
@@ -47,10 +54,11 @@ public class ClockReceiver extends BroadcastReceiver {
 //                        }
 //                    }).start();
                     startClock(itemInfo.getRemind(), itemInfo.getMusicUri());
-
+                    label = itemInfo.getLabel();
                     new ClockThread().start();
                     if(itemInfo.getRepeat() == 0x0){
                         itemInfo.setIsEnable(FALSE);
+                        itemInfo.save();
                     }
                     /*new Thread() {
                         @Override
@@ -72,15 +80,42 @@ public class ClockReceiver extends BroadcastReceiver {
     }
 
     private class ClockThread extends Thread{
+
         @Override
         public void run() {
+            InfoPrefs.init("pet_info");
+            Intent intent = null;
+            if(InfoPrefs.getIntData("pet_isopen") == 0) {
+                InfoPrefs.setIntData("pet_isopen", 1);
+                Intent serviceIntent = new Intent(mContext, PetWindowService.class);
+                serviceIntent.putExtra("type",1);
+                serviceIntent.putExtra("label",label);
+                mContext.startService(serviceIntent);
+            }else{
+                 intent = new Intent(mContext, MsgWindowService.class);
+                intent.putExtra("label",label);
+                mContext.startService(intent);
+            }
+
+
+            //MyWindowManager.createMsgWindow(mContext,"闹钟标签："+label);
             try {
-                Thread.sleep(30000);//响铃30秒
+                Thread.sleep(5000);//如果不点击则会响铃30S
+                for(int i=0;i<30;i++){
+                    Thread.sleep(1000);//如果不点击则会响铃30S
+                    if(!MyWindowManager.isMsgShowing()){
+                        Log.d(TAG,i+"闹钟关闭");
+                        AudioPlayer.getInstance(mContext).stop();
+                        break;
+                    }
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             AudioPlayer.getInstance(mContext).stop();
-            Log.d(TAG,"闹钟关闭");
+            if(intent != null)
+                mContext.stopService(intent);
+            Log.d(TAG,"final---闹钟关闭");
         }
     }
 

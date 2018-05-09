@@ -3,6 +3,7 @@ package com.example.mypet.petpet;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -10,8 +11,6 @@ import android.view.WindowManager;
 import com.example.mypet.R;
 import com.example.mypet.utils.Constants;
 import com.example.mypet.utils.InfoPrefs;
-
-import java.util.Random;
 
 /**
  * Created by Ma5ker on 05/06/18.
@@ -44,7 +43,7 @@ public class MyWindowManager {
 //        return msgShowFlag;
 //    }
     //创建一个悬浮窗。初始位置为屏幕的右部中间位置
-    public static void createWindow(Context context) {
+    public static void createWindow(Context context,int type,String label) {
         //获取宠物信息
         InfoPrefs.init("pet_info");
         pet_name = InfoPrefs.getData("pet_name");
@@ -74,13 +73,18 @@ public class MyWindowManager {
             }
             floatWindow.setParams(windowParams);
             mWindowManager.addView(floatWindow, windowParams);
-            MyWindowManager.createMsgWindow(context, "我是你的宠物"+pet_name+".");
+            if(type == 0)
+                MyWindowManager.createMsgWindow(context, "我是你的宠物"+pet_name+".");
+            else if(type == 1){
+                MyWindowManager.createMsgWindow(context, "闹钟标签："+label);
+            }
         }
     }
 
     public static void createMsgWindow(Context context, String msg) {
         //检查是否有宠物，没有不做任何操作
         if (floatWindow != null) {
+            Log.e(TAG,"creatMsgWindow");
             msgWindowView = new MsgWindowView(context);
             //设置消息
             msgWindowView.setMessage(msg);
@@ -99,9 +103,9 @@ public class MyWindowManager {
             msgWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
             //设置消息气泡的朝向
             if (FloatWindowView.side == FloatWindowView.RIGHT) {
-                msgWindowView.setBackground(R.drawable.msg_window_right);
+                msgWindowView.setBackground(R.drawable.msg_window_right1);
             } else {
-                msgWindowView.setBackground(R.drawable.msg_window_left);
+                msgWindowView.setBackground(R.drawable.msg_window_left1);
             }
             int widthMs = View.MeasureSpec.makeMeasureSpec((1 << 30) - 1, View.MeasureSpec.AT_MOST);
             int heightMs = View.MeasureSpec.makeMeasureSpec((1 << 30) - 1, View.MeasureSpec.AT_MOST);

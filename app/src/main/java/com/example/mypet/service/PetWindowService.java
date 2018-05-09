@@ -28,6 +28,9 @@ public class PetWindowService extends Service {
     //定时器，定时进行检测当前应该创建还是移除悬浮窗。
     private Timer timer;
 
+    private int type;
+    private String label;
+
     @Nullable
     @Override
 
@@ -37,6 +40,11 @@ public class PetWindowService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        type = intent.getIntExtra("type",0);
+        label = intent.getStringExtra("label");
+        if(label == null){
+            label = "闹钟";
+        }
         // 开启定时器，每隔5秒刷新一次
         if (timer == null) {
             timer = new Timer();
@@ -57,7 +65,7 @@ public class PetWindowService extends Service {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        MyWindowManager.createWindow(getApplicationContext());
+                        MyWindowManager.createWindow(getApplicationContext(),type,label);
                     }
                 });
             }

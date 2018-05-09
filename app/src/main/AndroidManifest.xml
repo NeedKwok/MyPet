@@ -84,7 +84,12 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activity.PetInfoActivity"></activity>
+        <activity android:name=".activity.PetInfoActivity" />
+
+        <service
+            android:name=".service.MsgWindowService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

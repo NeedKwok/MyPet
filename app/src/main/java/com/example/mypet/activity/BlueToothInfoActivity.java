@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mypet.R;
+import com.example.mypet.utils.InfoPrefs;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -33,7 +34,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class BlueToothInfoActivity extends AppCompatActivity {
-    private static final String TAG = "BlueToothInfoActivity";
+        private static final String TAG = "BlueToothInfoActivity";
     private RelativeLayout name_show;
     private RelativeLayout number_show;
     private RelativeLayout blt_selectinfo;
@@ -48,12 +49,16 @@ public class BlueToothInfoActivity extends AppCompatActivity {
     private TextView s_deviceInfo;
     public static final UUID MY_UUID = UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
     public static final String NAME = "Bluetooth";
+    private String name;
     //选择的device
     BluetoothDevice device;
     private int REQUEST_ENABLE_BT=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        InfoPrefs.init("pet_info");
+        name=InfoPrefs.getData("pet_name");
         setContentView(R.layout.activity_bltinfo);
         name_show =findViewById(R.id.blt_name);
         number_show=findViewById(R.id.blt_num);
@@ -174,19 +179,18 @@ public class BlueToothInfoActivity extends AppCompatActivity {
             // If a connection was accepted
             if (socket != null) {
                 mkmsg("对方蓝牙设备地址: "+socket.getRemoteDevice().getAddress()+"\n");
-                //Note this is copied from the TCPdemo code.
                 try {
                     PrintWriter out = new PrintWriter( new BufferedWriter( new OutputStreamWriter(socket.getOutputStream())),true);
-                    mkmsg("尝试发送消息 ...\n");
-                    out.println("hello from Bluetooth Client");
+                    mkmsg("发送宠物信息...\n");
+                    out.println("宠物姓名："+name);
                     out.flush();
-                    mkmsg("消息已发送...\n");
+                    mkmsg("发送完成...\n");
 
-                    mkmsg("尝试接收消息 ...\n");
+                    mkmsg("接收消息 ...\n");
                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String str = in.readLine();
-                    mkmsg("接受到的消息:\n" + str+"\n");
-                    mkmsg("连接结束，准备关闭套接字\n");
+                    mkmsg("接收到的消息:\n" + str+"\n");
+                    mkmsg("连接结束\n");
                 } catch(Exception e) {
                     mkmsg("发送接收出现错误\n");
                 } finally {
@@ -199,8 +203,6 @@ public class BlueToothInfoActivity extends AppCompatActivity {
             } else {
                 mkmsg("以建立连接，但套接字为null\n");
             }
-            mkmsg("客户端结束\n");
-
         }
 
         public void cancel() {
@@ -237,33 +239,29 @@ public class BlueToothInfoActivity extends AppCompatActivity {
 
             // If a connection was accepted
             if (socket != null) {
-                manageSocket(socket);
-                closeSocket(socket);
-//                mkmsg("对方蓝牙设备地址： " + socket.getRemoteDevice().getAddress() + "\n");
-//                //Note this is copied from the TCPdemo code.
-//                try {
-//                    mkmsg("尝试接受消息\n");
-//                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//                    String str = in.readLine();
-//                    mkmsg("接收到的信息: " + str + "\n");
-//
-//                    PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-//                    mkmsg("尝试发送信息\n");
-//                    out.println("Hi from Bluetooth Server");
-//                    out.flush();
-//                    mkmsg("消息已发送...\n");
-//
-//                    mkmsg("准备关闭套接字\n");
-//                } catch (Exception e) {
-//                    mkmsg("发送或接收信息出现问题\n");
-//
-//                } finally {
-//                    try {
-////                        socket.close();
-////                    } catch (IOException e) {
-////                        mkmsg("无法关闭套接字： " + e.getMessage() + "\n");
-////                    }
-//                }
+                mkmsg("对方蓝牙设备地址： " + socket.getRemoteDevice().getAddress() + "\n");
+                //Note this is copied from the TCPdemo code.
+                try {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    String str = in.readLine();
+                    mkmsg("接收到的信息: " + str + "\n");
+                    PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+                    mkmsg("发送信息...\n");
+                    out.println("宠物姓名："+name);
+                    out.flush();
+                    mkmsg("已发送...\n");
+
+                    mkmsg("连接关闭\n");
+                } catch (Exception e) {
+                    mkmsg("发送或接收信息出现问题\n");
+
+                } finally {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        mkmsg("无法关闭套接字： " + e.getMessage() + "\n");
+                    }
+                }
 
             } else {
                 mkmsg("连接已建立，但套接字为null\n");
@@ -324,7 +322,7 @@ public class BlueToothInfoActivity extends AppCompatActivity {
     }
 
 
-    //回调函数
+//回调函数
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode==REQUEST_ENABLE_BT){
@@ -352,7 +350,7 @@ public class BlueToothInfoActivity extends AppCompatActivity {
                 //打开中
                 case BluetoothAdapter.STATE_TURNING_ON:
                     break;
-                //打开
+                    //打开
                 case BluetoothAdapter.STATE_ON:
                     unregisterReceiver(bluetoothState);
                     //获取本机设备信息
@@ -371,21 +369,21 @@ public class BlueToothInfoActivity extends AppCompatActivity {
         }
     };
 
-    //管理得到的socket
-    private void manageSocket(BluetoothSocket socket){
+//    //管理得到的socket
+//    private void manageSocket(BluetoothSocket socket){
+//
+//    }
+//
+//    //关闭套接字
+//    private void closeSocket(BluetoothSocket socket){
+//        try {
+//            socket.close();
+//        } catch (IOException e) {
+//            mkmsg("无法关闭套接字： " + e.getMessage() + "\n");
+//        }
+//    }
 
-    }
-
-    //关闭套接字
-    private void closeSocket(BluetoothSocket socket){
-        try {
-            socket.close();
-        } catch (IOException e) {
-            mkmsg("无法关闭套接字： " + e.getMessage() + "\n");
-        }
-    }
-
-    //  从系统设置界面返回后获取所有绑定的设备信息
+//  从系统设置界面返回后获取所有绑定的设备信息
     @Override
     protected void onRestart() {
         getBoundDeviceInfo();
