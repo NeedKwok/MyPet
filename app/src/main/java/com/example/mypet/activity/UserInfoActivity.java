@@ -43,24 +43,18 @@ import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener{
+public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "UserInfoActivity";
     private static final int REQUEST_IMAGE_GET = 0;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_SMALL_IMAGE_CUTTING = 2;
     private static final int REQUEST_CHANGE_USER_NICK_NAME = 10;
-    //private static final int REQUEST_BIG_IMAGE_CUTTING = 3;
     private static final String IMAGE_FILE_NAME = "user_head_icon.jpg";
 
     PhotoPopupWindow mPhotoPopupWindow;
-
-    RelativeLayout relativeLayout_user_nick_name;
-    RelativeLayout relativeLayout_user_gender;
-    RelativeLayout relativeLayout_user_head;
     TextView textView_user_nick_name;
     TextView textView_user_gender;
     CircleImageView circleImageView_user_head;
-    //SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,23 +64,26 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         textView_user_nick_name = findViewById(R.id.user_nick_name_TV);
         textView_user_gender = findViewById(R.id.user_gender_TV);
         circleImageView_user_head = findViewById(R.id.user_head_iv);
+        //InfoPrefs自己封装的一个 SharedPreferences 工具类
+        //init()指定文件名，getData(String key)获取key对应的字符串，getIntData(int key)获取key对应的int
         InfoPrefs.init("user_info");
-        init();
+        refresh();
 
-        relativeLayout_user_nick_name = findViewById(R.id.user_nick_name);
+        RelativeLayout relativeLayout_user_nick_name = findViewById(R.id.user_nick_name);
         relativeLayout_user_nick_name.setOnClickListener(this);
 
-        relativeLayout_user_gender = findViewById(R.id.user_gender);
+        RelativeLayout relativeLayout_user_gender = findViewById(R.id.user_gender);
         relativeLayout_user_gender.setOnClickListener(this);
 
-        relativeLayout_user_head = findViewById(R.id.user_head);
+        RelativeLayout relativeLayout_user_head = findViewById(R.id.user_head);
         relativeLayout_user_head.setOnClickListener(this);
-
+        //初始化 toolbar
         Toolbar toolbar = findViewById(R.id.toolbar_userinfo);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
 
-        if(actionBar != null ){
+        if (actionBar != null) {
+            //指定toolbar左上角的返回按钮，这个按钮的id是home（无法更改）
             actionBar.setDisplayHomeAsUpEnabled(true);
             //actionBar.setHomeAsUpIndicator();
         }
@@ -95,10 +92,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     /*@Override
     protected void onRestart() {
         super.onRestart();
-        init();
+        refresh();
     }*/
 
-    public void init(){
+    public void refresh(){
         textView_user_nick_name.setText(InfoPrefs.getData(Constants.UserInfo.NAME));
         textView_user_gender.setText(InfoPrefs.getData(Constants.UserInfo.GENDER));
         showHeadImage();
@@ -109,6 +106,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.user_head:
+                //创建存放头像的文件夹
                 PictureUtil.mkdirMyPetRootDirectory();
                 mPhotoPopupWindow = new PhotoPopupWindow(UserInfoActivity.this, new View.OnClickListener() {
                     @Override
@@ -221,7 +219,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 // 相册选取
                 case REQUEST_IMAGE_GET:
                     Uri uri= PictureUtil.getImageUri(this,data);
-                    startSmallPhotoZoom(uri);
+                    startPhotoZoom(uri);
                     break;
 
                 // 拍照
@@ -235,7 +233,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     } else {
                         pictureUri = Uri.fromFile(pictureFile);
                     }
-                    startSmallPhotoZoom(pictureUri);
+                    startPhotoZoom(pictureUri);
                     break;
                 // 获取changeinfo销毁 后 回传的数据
                 case REQUEST_CHANGE_USER_NICK_NAME:
@@ -250,34 +248,25 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void startSmallPhotoZoom(Uri uri) {
-        Log.e(TAG,"START small");
-        Log.e(TAG,"Uri = "+uri.toString());
-
+    private void startPhotoZoom(Uri uri) {
+        Log.d(TAG,"Uri = "+uri.toString());
+        //保存裁剪后的图片
         File cropFile=new File(PictureUtil.getMyPetRootDirectory(),"crop.jpg");
         try{
             if(cropFile.exists()){
                 cropFile.delete();
                 Log.e(TAG,"delete");
             }
-            //cropFile.createNewFile();
         }catch(Exception e){
             e.printStackTrace();
         }
-
         Uri cropUri;
-       // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-       //     cropUri = FileProvider.getUriForFile(this,
-          //          "com.example.mypet.fileprovider", cropFile);
-       // } else {
-            cropUri = Uri.fromFile(cropFile);
-       // }
+        cropUri = Uri.fromFile(cropFile);
 
         Intent intent = new Intent("com.android.camera.action.CROP");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
-           // intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-           // this.grantUriPermission(this.getPackageName(),cropUri,Intent.FLAG_GRANT_WRITE_URI_PERMISSION|Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
@@ -289,10 +278,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         intent.putExtra("return-data", false);
 
         Log.e(TAG,"cropUri = "+cropUri.toString());
+
         intent.putExtra(MediaStore.EXTRA_OUTPUT, cropUri);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", true); // no face detection
-        Log.e(TAG,"before cut");
         startActivityForResult(intent, REQUEST_SMALL_IMAGE_CUTTING);
     }
 
@@ -332,18 +321,22 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private void imageCapture() {
         Intent intent;
         Uri pictureUri;
+        //getMyPetRootDirectory()得到的是Environment.getExternalStorageDirectory() + File.separator+"MyPet"
+        //也就是我之前创建的存放头像的文件夹（目录）
         File pictureFile = new File(PictureUtil.getMyPetRootDirectory(), IMAGE_FILE_NAME);
         // 判断当前系统
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            //这一句非常重要
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            //""中的内容是随意的，但最好用package名.provider名的形式，清晰明了
             pictureUri = FileProvider.getUriForFile(this,
                     "com.example.mypet.fileprovider", pictureFile);
         } else {
             intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             pictureUri = Uri.fromFile(pictureFile);
         }
-        // 去拍照
+        // 去拍照,拍照的结果存到oictureUri对应的路径中
         intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
         Log.e(TAG,"before take photo"+pictureUri.toString());
         startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);

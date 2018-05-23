@@ -162,6 +162,10 @@ public class PetInfoActivity extends AppCompatActivity implements View.OnClickLi
                 default:
             }
         }else{
+            if(requestCode == REQUEST_FLOAT_WINDOW){
+                InfoPrefs.setIntData("pet_isopen",0);
+                switchButton_pet_isopen.setChecked(false);
+            }
             Log.e(TAG,"result = "+resultCode+",request = "+requestCode);
         }
     }

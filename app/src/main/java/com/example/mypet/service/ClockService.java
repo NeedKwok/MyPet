@@ -3,11 +3,13 @@ package com.example.mypet.service;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.icu.text.IDNA;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.example.mypet.receiver.ClockReceiver;
 import com.example.mypet.utils.AudioPlayer;
+import com.example.mypet.utils.InfoPrefs;
 import com.example.mypet.utils.MyPetApplication;
 
 public class ClockService extends Service {
@@ -43,6 +45,8 @@ public class ClockService extends Service {
         super.onDestroy();
         if(receiver != null) {
             unregisterReceiver(receiver);
+            InfoPrefs.init("pet_info");
+            InfoPrefs.setIntData("pet_isopen",0);
             AudioPlayer.getInstance(MyPetApplication.getContext()).stop();
         }
     }

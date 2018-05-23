@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="嘤嘤嘤" />
+            android:text="桌面宠物demo" />
 
     </FrameLayout>
     <android.support.design.widget.NavigationView

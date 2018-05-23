@@ -127,7 +127,6 @@ public class BlueToothInfoActivity extends AppCompatActivity {
                     break;
                 case R.id.as_client:
                     //开启客户端
-                    startServer();
                     startClient();
                     break;
             }
